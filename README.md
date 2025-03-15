@@ -26,3 +26,4 @@ pip install adafruit-io
 pip install pyserial
 ```
 
+Trang web này được host tại: https://yymt242.github.io/DADN242_Group82/
