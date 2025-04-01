@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Login Template</title>
+  <title>Login & Register</title>
   <link href="https://fonts.googleapis.com/css?family=Karla:400,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.8.95/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -18,8 +18,9 @@
       <div class="row">
         <div class="col-sm-6 login-section-wrapper">
           <div class="login-wrapper my-auto">
-            <h1 class="login-title">Log in</h1>
-            <form action="#!">
+            <h1 class="login-title" id="form-title">Log in</h1>
+
+            <form id="login-form">
               <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" name="email" id="email" class="form-control" placeholder="Email">
@@ -28,12 +29,33 @@
                 <label for="password">Password</label>
                 <input type="password" name="password" id="password" class="form-control" placeholder="Password">
               </div>
-              <input name="login" id="login" class="btn btn-block login-btn" type="button" value="Login"
+              <input name="login" id="login-btn" class="btn btn-block login-btn" type="button" value="Login"
                 onclick="checkAccount()">
+              <a href="#" class="forgot-password-link" id="forgot-password">Forgot password?</a>
+              <p class="login-wrapper-footer-text">Don't have an account? <a href="#" id="switch-to-register"
+                  class="text-reset">Register here</a></p>
             </form>
-            <a href="#!" class="forgot-password-link">Forgot password?</a>
-            <p class="login-wrapper-footer-text">Don't have account ? <a href="#!" class="text-reset">Register
-                here</a></p>
+
+            <form id="register-form" style="display: none;">
+              <div class="form-group">
+                <label for="reg-email">Email</label>
+                <input type="email" name="reg-email" id="reg-email" class="form-control" placeholder="Email">
+              </div>
+              <div class="form-group">
+                <label for="reg-password">Password</label>
+                <input type="password" name="reg-password" id="reg-password" class="form-control"
+                  placeholder="Password">
+              </div>
+              <div class="form-group mb-4">
+                <label for="reg-confirm-password">Confirm Password</label>
+                <input type="password" name="reg-confirm-password" id="reg-confirm-password" class="form-control"
+                  placeholder="Confirm Password">
+              </div>
+              <input name="register" id="register-btn" class="btn btn-block login-btn" type="button" value="Register"
+                onclick="registerAccount()">
+              <p class="login-wrapper-footer-text">Already have an account? <a href="#" id="switch-to-login"
+                  class="text-reset">Login here</a></p>
+            </form>
           </div>
         </div>
         <div class="col-sm-6 px-0 d-none d-sm-block">
@@ -42,12 +64,110 @@
       </div>
     </div>
   </main>
+
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/js/checkAccount.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('#switch-to-register').click(function () {
+        $('#login-form').hide();
+        $('#register-form').show();
+        $('#form-title').text('Register');
+      });
 
+      $('#switch-to-login').click(function () {
+        $('#register-form').hide();
+        $('#login-form').show();
+        $('#form-title').text('Log in');
+      });
+    });
+  </script>
+  <script type="module">
+    import {initializeApp}
+      from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+
+    import {getAnalytics}
+      from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword }
+      from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCLE7kFEQc7ZIC9kgtY70auZ14NoLoltxQ",
+      authDomain: "dadn242group82.firebaseapp.com",
+      projectId: "dadn242group82",
+      storageBucket: "dadn242group82.firebasestorage.app",
+      messagingSenderId: "462160967009",
+      appId: "1:462160967009:web:813fae07b129707bb4c120",
+      measurementId: "G-V4M7Q5KX56"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+
+    // Login function
+    window.checkAccount = function () {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          alert("Login successful");
+          console.log("User Info:", userCredential.user);
+          // Redirect or handle successful login
+          window.location.href = "../Chart/index.html";
+        })
+        .catch((error) => {
+          alert("Login failed: " + error.message);
+        });
+    };
+
+    // Register function
+    window.registerAccount = function () {
+      const email = document.getElementById("reg-email").value;
+      const password = document.getElementById("reg-password").value;
+      const confirmPassword = document.getElementById("reg-confirm-password").value;
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match");
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          alert("Registration successful");
+          console.log("User Info:", userCredential.user);
+          // Redirect or handle successful registration
+          document.getElementById("register-form").reset();
+          $('#register-form').hide();
+          $('#login-form').show();
+          $('#form-title').text('Log in');
+        })
+        .catch((error) => {
+          alert("Registration failed: " + error.message);
+        });
+    };
+
+  </script>
+  <script>
+    document.getElementById("forgot-password").addEventListener("click", function() {
+      const email = prompt("Please enter your email to reset password:");
+      if (email) {
+        import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js").then(({ getAuth, sendPasswordResetEmail }) => {
+          const auth = getAuth();
+          sendPasswordResetEmail(auth, email)
+            .then(() => {
+              alert("Password reset email sent. Please check your inbox.");
+            })
+            .catch((error) => {
+              alert("Error: " + error.message);
+            });
+        });
+      }
+    });
+  </script>
 </body>
 
 </html>
