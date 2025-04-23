@@ -14,56 +14,54 @@
 
 <body>
   <main>
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-6 login-section-wrapper">
-          <div class="login-wrapper my-auto">
-            <h1 class="login-title" id="form-title">Log in</h1>
+    <div class="login-container">
+      <div class="background-image"></div>
+      <div class="form-overlay">
+        <h1 class="login-title" id="form-title">Đăng nhập</h1>
 
-            <form id="login-form">
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" class="form-control" placeholder="Email">
-              </div>
-              <div class="form-group mb-4">
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" class="form-control" placeholder="Password">
-              </div>
-              <input name="login" id="login-btn" class="btn btn-block login-btn" type="button" value="Login"
-                onclick="checkAccount()">
-              <a href="#" class="forgot-password-link" id="forgot-password">Forgot password?</a>
-              <p class="login-wrapper-footer-text">Don't have an account? <a href="#" id="switch-to-register"
-                  class="text-reset">Register here</a></p>
-            </form>
-
-            <form id="register-form" style="display: none;">
-              <div class="form-group">
-                <label for="reg-email">Email</label>
-                <input type="email" name="reg-email" id="reg-email" class="form-control" placeholder="Email">
-              </div>
-              <div class="form-group">
-                <label for="reg-password">Password</label>
-                <input type="password" name="reg-password" id="reg-password" class="form-control"
-                  placeholder="Password">
-              </div>
-              <div class="form-group mb-4">
-                <label for="reg-confirm-password">Confirm Password</label>
-                <input type="password" name="reg-confirm-password" id="reg-confirm-password" class="form-control"
-                  placeholder="Confirm Password">
-              </div>
-              <input name="register" id="register-btn" class="btn btn-block login-btn" type="button" value="Register"
-                onclick="registerAccount()">
-              <p class="login-wrapper-footer-text">Already have an account? <a href="#" id="switch-to-login"
-                  class="text-reset">Login here</a></p>
-            </form>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="Email" />
           </div>
-        </div>
-        <div class="col-sm-6 px-0 d-none d-sm-block">
-          <img src="assets/images/login.png" alt="login image" class="login-img">
-        </div>
+          <div class="form-group">
+            <label for="password">Mật khẩu</label>
+            <input type="password" name="password" id="password" class="form-control" placeholder="Mật khẩu" />
+          </div>
+          <input name="login" id="login-btn" class="btn login-btn" type="button" value="Đăng nhập"
+            onclick="checkAccount()" />
+          <a href="#" class="forgot-password-link" id="forgot-password">Quên mật khẩu?</a>
+          <p class="login-wrapper-footer-text">
+            Chưa có tài khoản?
+            <a href="#" id="switch-to-register" class="text-reset">Đăng ký tại đây</a>
+          </p>
+        </form>
+
+        <form id="register-form" style="display: none;">
+          <div class="form-group">
+            <label for="reg-email">Email</label>
+            <input type="email" name="reg-email" id="reg-email" class="form-control" placeholder="Email" />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Mật khẩu</label>
+            <input type="password" name="reg-password" id="reg-password" class="form-control" placeholder="Mật khẩu" />
+          </div>
+          <div class="form-group">
+            <label for="reg-confirm-password">Xác nhận mật khẩu</label>
+            <input type="password" name="reg-confirm-password" id="reg-confirm-password" class="form-control"
+              placeholder="Xác nhận mật khẩu" />
+          </div>
+          <input name="register" id="register-btn" class="btn login-btn" type="button" value="Đăng ký"
+            onclick="registerAccount()" />
+          <p class="login-wrapper-footer-text">
+            Đã có tài khoản?
+            <a href="#" id="switch-to-login" class="text-reset">Đăng nhập tại đây</a>
+          </p>
+        </form>
       </div>
     </div>
   </main>
+
 
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
@@ -73,21 +71,21 @@
       $('#switch-to-register').click(function () {
         $('#login-form').hide();
         $('#register-form').show();
-        $('#form-title').text('Register');
+        $('#form-title').text('Đăng ký');
       });
 
       $('#switch-to-login').click(function () {
         $('#register-form').hide();
         $('#login-form').show();
-        $('#form-title').text('Log in');
+        $('#form-title').text('Đăng nhập');
       });
     });
   </script>
   <script type="module">
-    import {initializeApp}
+    import { initializeApp }
       from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 
-    import {getAnalytics}
+    import { getAnalytics }
       from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
 
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword }
@@ -114,13 +112,13 @@
 
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          alert("Login successful");
-          console.log("User Info:", userCredential.user);
+          alert("Đăng nhập thành công");
+          console.log("Thông tin người dùng:", userCredential.user);
           // Redirect or handle successful login
-          window.location.href = "../Chart/index.html";
+          window.location.href = "../Homepage/index.html";
         })
         .catch((error) => {
-          alert("Login failed: " + error.message);
+          alert("Đăng nhập thất bại: " + error.message);
         });
     };
 
@@ -131,38 +129,38 @@
       const confirmPassword = document.getElementById("reg-confirm-password").value;
 
       if (password !== confirmPassword) {
-        alert("Passwords do not match");
+        alert("Mật khẩu không khớp. Vui lòng kiểm tra lại.");
         return;
       }
 
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          alert("Registration successful");
+          alert("Đăng ký thành công");
           console.log("User Info:", userCredential.user);
           // Redirect or handle successful registration
           document.getElementById("register-form").reset();
           $('#register-form').hide();
           $('#login-form').show();
-          $('#form-title').text('Log in');
+          $('#form-title').text('Đăng nhập');
         })
         .catch((error) => {
-          alert("Registration failed: " + error.message);
+          alert("Đăng ký không thành công: " + error.message);
         });
     };
 
   </script>
   <script>
-    document.getElementById("forgot-password").addEventListener("click", function() {
+    document.getElementById("forgot-password").addEventListener("click", function () {
       const email = prompt("Please enter your email to reset password:");
       if (email) {
         import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js").then(({ getAuth, sendPasswordResetEmail }) => {
           const auth = getAuth();
           sendPasswordResetEmail(auth, email)
             .then(() => {
-              alert("Password reset email sent. Please check your inbox.");
+              alert("Đã gửi email đặt lại mật khẩu.");
             })
             .catch((error) => {
-              alert("Error: " + error.message);
+              alert("Lỗi: " + error.message);
             });
         });
       }

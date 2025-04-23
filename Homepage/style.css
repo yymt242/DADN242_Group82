@@ -1,0 +1,109 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    padding: 10px;
+}
+
+.container {
+    max-width: 480px;
+    margin: auto;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    background: #0023c4;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.rooms button {
+    padding: 8px 12px;
+    margin: 5px 3px;
+    border: none;
+    border-radius: 20px;
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.rooms .active {
+    background-color: #0023c4;
+    color: white;
+}
+
+.section {
+    margin: 15px 0;
+}
+
+.section-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.info-box {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+}
+
+.device-box {
+    padding: 10px;
+    border: 2px solid #0023c4;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.switch {
+    float: right;
+}
+
+.slider-container {
+    margin-top: 5px;
+}
+
+.data-section {
+    margin-top: 20px;
+}
+
+.chart-buttons button {
+    margin: 3px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 12px;
+    background-color: #dcdcdc;
+    cursor: pointer;
+}
+
+.chart-buttons button.active {
+    background-color: #0023c4;
+    color: white;
+}
+
+.output-box {
+    margin-top: 10px;
+    height: 150px;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+}
