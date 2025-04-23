@@ -44,11 +44,20 @@ async function fetchFeedData(feedKey) {
             unit = "";
     }
 
-    if (feedKey === "quat" || feedKey === "led1") {
-        document.getElementById(`${feedKey}-status`).textContent = latestValue === "1" ? "Bật" : "Tắt";
-    }
-    else {
-        document.getElementById(`${feedKey}-status`).textContent = `${latestValue}${unit}`;
+    const statusEl = document.getElementById(`${feedKey}-status`);
+
+    // For devices: update text and class
+    if (feedKey === "led1" || feedKey === "quat") {
+        const isOn = latestValue === "1";
+        statusEl.textContent = isOn ? "Bật" : "Tắt";
+        statusEl.className = `status ${isOn ? "blue" : "gray"}`;
+
+        // Sync switch state
+        const toggle = document.querySelector(`.switch input[data-feed="${feedKey}"]`);
+        if (toggle) toggle.checked = isOn;
+    } else {
+        // For sensors: just update value + unit
+        statusEl.textContent = `${latestValue}${unit}`;
     }
 }
 
@@ -61,7 +70,7 @@ function fetchFeedsInCircularManner() {
 
 // Call it once and then refresh every 1 second
 fetchFeedsInCircularManner();
-setInterval(fetchFeedsInCircularManner, 250);
+setInterval(fetchFeedsInCircularManner, 350);
 
 
 async function sendFeedData(feedKey, value) {
@@ -88,14 +97,21 @@ async function sendFeedData(feedKey, value) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Find all switches
     const switches = document.querySelectorAll(".switch input[type='checkbox']");
 
-    switches.forEach((toggle, index) => {
+    switches.forEach(toggle => {
+        const feedKey = toggle.getAttribute("data-feed");
         toggle.addEventListener("change", () => {
-            const feedKey = index === 0 ? "quat" : "led1"; // Assuming first is quạt, second is đèn
-            const value = toggle.checked ? "1" : "0"; // 1 = ON, 0 = OFF
+            const value = toggle.checked ? "1" : "0";
             sendFeedData(feedKey, value);
         });
     });
+
+    // Fetch initial values and sync UI
+    fetchFeedData("quat");
+    fetchFeedData("led1");
+    fetchFeedData("anhsang");
+    fetchFeedData("khoangcach");
+    fetchFeedData("nhietdo");
+    fetchFeedData("doam");
 });

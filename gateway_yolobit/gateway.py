@@ -1,23 +1,21 @@
 import serial.tools.list_ports
-import random
 import time
-import  sys
-from  Adafruit_IO import  MQTTClient
+import sys
+from Adafruit_IO import MQTTClient
 
 # Define all your feed IDs here
 AIO_FEED_IDS = ["anhsang", "doam", "khoangcach", "led1", "nhietdo", "quat"]
-
 AIO_USERNAME = "yymt242"
 AIO_KEY = "aio_FdAg28NUZ1PArEY9IjaXGYcz6NRy"
 
 # Callback functions
 def connected(client):
-    print("Kết nối thành công...")
+    print("Kết nối thành công đến Adafruit IO")
     for feed in AIO_FEED_IDS:
         client.subscribe(feed)
 
 def subscribe(client, userdata, mid, granted_qos):
-    print("Đăng ký feed thành công...")
+    print(f"Đăng ký feed thành công")
 
 def disconnected(client):
     print("Ngắt kết nối...")
@@ -52,15 +50,18 @@ if port:
     ser = serial.Serial(port=port, baudrate=115200)
     isMicrobitConnected = True
 
+# Dictionary to hold the latest values
+latest_data = {}
+
 # Data processing
 def processData(data):
     data = data.replace("!", "").replace("#", "")
     splitData = data.split(":")
     if len(splitData) == 2:
         feed_id, value = splitData
-        print(f"Gửi dữ liệu tới {feed_id}: {value}")
+        print(f"Nhận từ microcontroller: {feed_id} = {value}")
         if feed_id in AIO_FEED_IDS:
-            client.publish(feed_id, value)
+            latest_data[feed_id] = value
 
 # Serial reading
 mess = ""
@@ -78,15 +79,16 @@ def readSerial():
                 mess = mess[end+1:]
 
 # Main loop
+feed_index = 0
 while True:
     if isMicrobitConnected:
         readSerial()
-    for feed_id in AIO_FEED_IDS:
-        # For led1 and quat, send 0 or 1. For others, send a random int between 10-100
-        if feed_id in ["led1", "quat"]:
-            value = random.randint(0, 1)
+        current_feed = AIO_FEED_IDS[feed_index]
+        if current_feed in latest_data:
+            value = latest_data[current_feed]
+            print(f"Gửi tới {current_feed}: {value}")
+            client.publish(current_feed, value)
         else:
-            value = random.randint(10, 100)
-        print(f"Gửi ngẫu nhiên tới {feed_id}: {value}")
-        client.publish(feed_id, value)
-        time.sleep(5)  # Delay to avoid flooding the server
+            print(f"Chưa có dữ liệu cho {current_feed}, bỏ qua")
+        feed_index = (feed_index + 1) % len(AIO_FEED_IDS)
+        time.sleep(2)  # 2 seconds between sending each feed
