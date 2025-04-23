@@ -6,11 +6,6 @@
 }
 
 body {
-    background-color: #f9f9f9;
-    padding: 10px;
-}
-
-.container {
     max-width: 480px;
     margin: auto;
     background-color: #fff;
@@ -55,15 +50,37 @@ body {
 .section-title {
     font-weight: bold;
     margin-bottom: 10px;
+    font-size: 25px;
 }
 
-.info-box {
+.env-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.env-box {
     display: flex;
-    justify-content: space-between;
-    margin: 5px 0;
+    flex-direction: column;
+    justify-content: center;
+    border: 2px solid #000;
+    border-radius: 15px;
     padding: 10px;
-    background-color: #f1f1f1;
-    border-radius: 10px;
+}
+
+.env-box span:first-child {
+    font-weight: bold;
+}
+
+.env-box span:last-child {
+    font-weight: bold;
+    font-size: 30px;
+    color: #0023c4;
+}
+
+.highlight-box {
+    background-color: #e6faff;
+    border: 3px solid #0023c4;
 }
 
 .device-box {
@@ -72,6 +89,81 @@ body {
     border-radius: 10px;
     margin-bottom: 10px;
 }
+
+
+.device-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 50px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 50px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 42px;
+    width: 42px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: #0023c4;
+}
+
+input:checked+.slider:before {
+    transform: translateX(50px);
+}
+
+/* Optional enhancements */
+.status-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.device-box {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    margin: 10px 0;
+}
+
+.blue {
+    color: #2196F3;
+}
+
+.gray {
+    color: #888;
+}
+
 
 .switch {
     float: right;
@@ -106,4 +198,9 @@ body {
     border: 1px solid #ccc;
     border-radius: 10px;
     padding: 10px;
+}
+
+.device-row strong {
+    font-size: 22px;
+    font-weight: bold;
 }

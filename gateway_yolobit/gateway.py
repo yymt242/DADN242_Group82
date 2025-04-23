@@ -4,30 +4,32 @@ import time
 import  sys
 from  Adafruit_IO import  MQTTClient
 
-AIO_FEED_IDS = ["led1", "nhietdo"]
+# Define all your feed IDs here
+AIO_FEED_IDS = ["anhsang", "doam", "khoangcach", "led1", "nhietdo", "quat"]
 
 AIO_USERNAME = "yymt242"
 AIO_KEY = "aio_FdAg28NUZ1PArEY9IjaXGYcz6NRy"
 
-
-def  connected(client):
-    print("Ket noi thanh cong...")
+# Callback functions
+def connected(client):
+    print("Kết nối thành công...")
     for feed in AIO_FEED_IDS:
         client.subscribe(feed)
 
-def  subscribe(client , userdata , mid , granted_qos):
-    print("Subcribe thanh cong...")
+def subscribe(client, userdata, mid, granted_qos):
+    print("Đăng ký feed thành công...")
 
-def  disconnected(client):
-    print("Ngat ket noi...")
-    sys.exit (1)
+def disconnected(client):
+    print("Ngắt kết nối...")
+    sys.exit(1)
 
-def  message(client , feed_id , payload):
-    print("Nhan du lieu: " + payload)
+def message(client, feed_id, payload):
+    print(f"Nhận dữ liệu từ {feed_id}: {payload}")
     if isMicrobitConnected:
-        ser.write((str(payload) + "#").encode())
+        ser.write((f"{feed_id}:{payload}#").encode())
 
-client = MQTTClient(AIO_USERNAME , AIO_KEY)
+# MQTT setup
+client = MQTTClient(AIO_USERNAME, AIO_KEY)
 client.on_connect = connected
 client.on_disconnect = disconnected
 client.on_message = message
@@ -35,49 +37,56 @@ client.on_subscribe = subscribe
 client.connect()
 client.loop_background()
 
+# Serial port detection
 def getPort():
     ports = serial.tools.list_ports.comports()
-    N = len(ports)
-    commPort = "None"
-    for i in range(0, N):
-        port = ports[i]
-        strPort = str(port)
-        if "USB Serial Device" in strPort:
-            splitPort = strPort.split(" ")
-            commPort = (splitPort[0])
-    return commPort
+    for port in ports:
+        if "USB Serial Device" in str(port):
+            return str(port).split(" ")[0]
+    return None
 
+# Check for micro:bit connection
 isMicrobitConnected = False
-if getPort() != "None":
-    ser = serial.Serial( port=getPort(), baudrate=115200)
+port = getPort()
+if port:
+    ser = serial.Serial(port=port, baudrate=115200)
     isMicrobitConnected = True
 
-
+# Data processing
 def processData(data):
-    data = data.replace("!", "")
-    data = data.replace("#", "")
+    data = data.replace("!", "").replace("#", "")
     splitData = data.split(":")
-    print(splitData)
-    if splitData[1] == "TEMP":
-        client.publish("bbc-temp", splitData[2])
+    if len(splitData) == 2:
+        feed_id, value = splitData
+        print(f"Gửi dữ liệu tới {feed_id}: {value}")
+        if feed_id in AIO_FEED_IDS:
+            client.publish(feed_id, value)
 
+# Serial reading
 mess = ""
 def readSerial():
-    bytesToRead = ser.inWaiting()
-    if (bytesToRead > 0):
-        global mess
-        mess = mess + ser.read(bytesToRead).decode("UTF-8")
-        while ("#" in mess) and ("!" in mess):
+    global mess
+    if ser.inWaiting() > 0:
+        mess += ser.read(ser.inWaiting()).decode("UTF-8")
+        while "!" in mess and "#" in mess:
             start = mess.find("!")
             end = mess.find("#")
-            processData(mess[start:end + 1])
-            if (end == len(mess)):
-                mess = ""
+            if start < end:
+                processData(mess[start+1:end])
+                mess = mess[end+1:]
             else:
                 mess = mess[end+1:]
 
+# Main loop
 while True:
     if isMicrobitConnected:
         readSerial()
-
-    time.sleep(1)
+    for feed_id in AIO_FEED_IDS:
+        # For led1 and quat, send 0 or 1. For others, send a random int between 10-100
+        if feed_id in ["led1", "quat"]:
+            value = random.randint(0, 1)
+        else:
+            value = random.randint(10, 100)
+        print(f"Gửi ngẫu nhiên tới {feed_id}: {value}")
+        client.publish(feed_id, value)
+        time.sleep(5)  # Delay to avoid flooding the server

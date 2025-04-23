@@ -9,68 +9,104 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <h2>Hệ thống báo động an toàn cho gia đình</h2>
-            <small>Nhóm 82 - Đồ án đa ngành HK242</small>
-        </div>
+    <div class="header">
+        <h2>Hệ thống báo động an toàn cho gia đình</h2>
+        <small>Nhóm 82 - Đồ án đa ngành HK242</small>
+    </div>
 
-        <div class="user-info">
-            <span><strong>Nguyễn Thành Đạt</strong></span>
-            <a href="#">Đăng xuất</a>
-        </div>
 
-        <div class="rooms">
-            <button>Phòng khách</button>
-            <button class="active">Phòng ngủ 1</button>
-            <button>Nhà bếp</button>
-        </div>
+    <div class="user-info">
+        <span><strong>Nguyễn Thành Đạt</strong></span>
+        <a href="#">Đăng xuất</a>
+    </div>
 
-        <div class="section">
-            <div class="section-title">Môi trường</div>
-            <div class="info-box"><span>Ánh sáng</span><span>100 lm</span></div>
-            <div class="info-box"><span>Phát hiện đột nhập</span><span
-                    style="color: #0023c4;"><strong>Không</strong></span></div>
-            <div class="info-box"><span>Nhiệt độ</span><span>25°C</span></div>
-            <div class="info-box"><span>Độ ẩm</span><span>15%</span></div>
-        </div>
+    <!-- Room data section -->
+    <div class="rooms">
+        <button>Phòng khách</button>
+        <button class="active">Phòng ngủ 1</button>
+        <button>Nhà bếp</button>
+    </div>
 
-        <div class="section">
-            <div class="section-title">Thiết bị</div>
-            <div class="device-box">
-                <div>Quạt <span class="switch">Đã tắt</span></div>
-                <div>Công suất: 0%</div>
-            </div>
-            <div class="device-box">
-                <div>Đèn <span class="switch">Đang bật</span></div>
-                <div>Màu sắc: <span style="color: gold;">●</span> | Độ sáng: 80%</div>
-            </div>
-            <div class="device-box">
-                <div>Cửa <span class="switch">Đang mở</span></div>
-                <div>Ngưỡng khoảng cách tự đóng: 12m</div>
-                <div class="slider-container">
-                    <input type="range" min="0" max="20" value="12">
+    <div class="section">
+        <div class="section-title">Môi trường</div>
+        <div class="env-grid">
+            <div class="env-box"><span>Ánh sáng</span><span id="anhsang-status">Loading...</span></div>
+            <div class="env-box highlight-box"><span>Phát hiện đột nhập</span><span
+                    id="khoangcach-status">Loading...</span></div>
+            <div class="env-box"><span>Nhiệt độ</span><span id="nhietdo-status">Loading...</span></div>
+            <div class="env-box"><span>Độ ẩm</span><span id="doam-status">Loading...</span></div>
+        </div>
+    </div>
+
+    <!-- Device section -->
+    <div class="section">
+        <div class="section-title">Thiết bị</div>
+
+        <div class="device-box">
+            <div class="device-row">
+                <strong>Quạt</strong>
+                <div class="status-group">
+                    <span class="status gray" id="quat-status">Loading...</span>
+                    <span class="mode">thủ công</span>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                    </label>
                 </div>
             </div>
+            <div class="device-sub">Công suất <span class="blue">0%</span></div>
         </div>
 
-        <div class="data-section">
-            <div><strong>Dữ liệu:</strong> Đèn</div>
-            <div>
-                <button>Đồ thị</button>
-                <button>Danh sách</button>
+        <div class="device-box active">
+            <div class="device-row">
+                <strong>Đèn</strong>
+                <div class="status-group">
+                    <span class="status blue" id="led1-status">Loading...</span>
+                    <span class="mode">thủ công</span>
+                    <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
             </div>
-            <div class="output-box"></div>
-            <div class="chart-buttons">
-                <button class="active">3 phút</button>
-                <button>1 giờ</button>
-                <button>5 giờ</button>
-                <button>1 ngày</button>
-                <button>1 tuần</button>
-                <button>1 tháng</button>
+            <div class="device-sub">Màu sắc <span class="light">🟡</span> | Độ sáng <span class="blue">80%</span></div>
+        </div>
+
+        <div class="device-box">
+            <div class="device-row">
+                <strong>Cửa</strong>
+                <div class="status-group">
+                    <span class="status blue">Đang mở</span>
+                    <span class="mode auto">tự động</span>
+                </div>
+            </div>
+            <div class="device-sub">
+                Ngưỡng khoảng cách tự động đóng cửa <span class="blue">12m</span>
+            </div>
+            <div class="slider-container">
+                <input type="range" min="0" max="20" value="12">
             </div>
         </div>
     </div>
+
+
+    <div class="data-section">
+        <div><strong>Dữ liệu:</strong> Đèn</div>
+        <div>
+            <button>Đồ thị</button>
+            <button>Danh sách</button>
+        </div>
+        <div class="output-box"></div>
+        <div class="chart-buttons">
+            <button class="active">3 phút</button>
+            <button>1 giờ</button>
+            <button>5 giờ</button>
+            <button>1 ngày</button>
+            <button>1 tuần</button>
+            <button>1 tháng</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 
 </html>
