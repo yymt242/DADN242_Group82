@@ -32,7 +32,7 @@ async function fetchFeedData(feedKey) {
             unit = " lm";
             break;
         case "khoangcach":
-            unit = " m";
+            unit = " cm";
             break;
         case "nhietdo":
             unit = " °C";

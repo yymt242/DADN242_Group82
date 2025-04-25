@@ -39,7 +39,8 @@ client.loop_background()
 def getPort():
     ports = serial.tools.list_ports.comports()
     for port in ports:
-        if "USB Serial Device" in str(port):
+        if "USB-SERIAL" in str(port):
+            print(str(port).split(" ")[0])
             return str(port).split(" ")[0]
     return None
 
@@ -69,6 +70,7 @@ def readSerial():
     global mess
     if ser.inWaiting() > 0:
         mess += ser.read(ser.inWaiting()).decode("UTF-8")
+        print(f"Nhận từ microcontroller: {mess}")
         while "!" in mess and "#" in mess:
             start = mess.find("!")
             end = mess.find("#")
@@ -91,4 +93,4 @@ while True:
         else:
             print(f"Chưa có dữ liệu cho {current_feed}, bỏ qua")
         feed_index = (feed_index + 1) % len(AIO_FEED_IDS)
-        time.sleep(2)  # 2 seconds between sending each feed
+        time.sleep(1)  # 2 seconds between sending each feed
