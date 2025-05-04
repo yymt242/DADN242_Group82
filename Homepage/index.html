@@ -210,6 +210,26 @@
 
             // Initial load of sensor data
             SENSOR_FEEDS.forEach(fetchFeedData);
+
+            // Subscribe to real-time updates for actuators
+            ACTUATOR_FEEDS.forEach(feedKey => {
+                const { db, ref, onValue } = window.firebase;
+                const feedRef = ref(db, feedKey);
+
+                onValue(feedRef, (snapshot) => {
+                    const value = snapshot.val();
+                    const toggle = document.querySelector(`.switch input[data-feed="${feedKey}"]`);
+                    const statusEl = document.getElementById(`${feedKey}-status`);
+
+                    if (toggle) {
+                        toggle.checked = value === "1";
+                    }
+                    if (statusEl) {
+                        statusEl.textContent = value === "1" ? "Bật" : "Tắt";
+                        statusEl.className = `status ${value === "1" ? "blue" : "gray"}`;
+                    }
+                });
+            });
         });
 
         document.getElementById("logout-link").addEventListener("click", function (event) {
