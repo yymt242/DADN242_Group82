@@ -19,7 +19,7 @@
       <div class="form-overlay">
         <h1 class="login-title" id="form-title">Đăng nhập</h1>
 
-        <form id="login-form">
+        <form id="login-form" onsubmit="checkAccount(event)">
           <div class="form-group">
             <label for="email">Email</label>
             <input type="email" name="email" id="email" class="form-control" placeholder="Email" />
@@ -28,7 +28,7 @@
             <label for="password">Mật khẩu</label>
             <input type="password" name="password" id="password" class="form-control" placeholder="Mật khẩu" />
           </div>
-          <input name="login" id="login-btn" class="btn login-btn" type="button" value="Đăng nhập"
+          <input name="login" id="login-btn" class="btn login-btn" type="submit" value="Đăng nhập"
             onclick="checkAccount()" />
           <a href="#" class="forgot-password-link" id="forgot-password">Quên mật khẩu?</a>
           <p class="login-wrapper-footer-text">
@@ -37,7 +37,7 @@
           </p>
         </form>
 
-        <form id="register-form" style="display: none;">
+        <form id="register-form" style="display: none;" onsubmit="registerAccount(event)">
           <div class="form-group">
             <label for="reg-email">Email</label>
             <input type="email" name="reg-email" id="reg-email" class="form-control" placeholder="Email" />
@@ -51,7 +51,7 @@
             <input type="password" name="reg-confirm-password" id="reg-confirm-password" class="form-control"
               placeholder="Xác nhận mật khẩu" />
           </div>
-          <input name="register" id="register-btn" class="btn login-btn" type="button" value="Đăng ký"
+          <input name="register" id="register-btn" class="btn login-btn" type="submit" value="Đăng ký"
             onclick="registerAccount()" />
           <p class="login-wrapper-footer-text">
             Đã có tài khoản?
@@ -106,15 +106,15 @@
     const auth = getAuth(app);
 
     // Login function
-    window.checkAccount = function () {
+    window.checkAccount = function (event) {
+      event.preventDefault(); // Prevent form from refreshing the page
+
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          alert("Đăng nhập thành công");
-          console.log("Thông tin người dùng:", userCredential.user);
-          // Redirect or handle successful login
+          localStorage.setItem('userEmail', userCredential.user.email);
           window.location.href = "../Homepage/index.html";
         })
         .catch((error) => {
@@ -123,7 +123,9 @@
     };
 
     // Register function
-    window.registerAccount = function () {
+    window.registerAccount = function (event) {
+      event.preventDefault();
+
       const email = document.getElementById("reg-email").value;
       const password = document.getElementById("reg-password").value;
       const confirmPassword = document.getElementById("reg-confirm-password").value;
@@ -136,8 +138,6 @@
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           alert("Đăng ký thành công");
-          console.log("User Info:", userCredential.user);
-          // Redirect or handle successful registration
           document.getElementById("register-form").reset();
           $('#register-form').hide();
           $('#login-form').show();

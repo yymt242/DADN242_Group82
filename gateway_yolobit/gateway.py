@@ -1,39 +1,15 @@
 import serial.tools.list_ports
 import time
 import sys
-from Adafruit_IO import MQTTClient
+import requests
+import random
 
-# Define all your feed IDs here
-AIO_FEED_IDS = ["anhsang", "doam", "khoangcach", "led1", "nhietdo", "quat"]
-AIO_USERNAME = "yymt242"
-AIO_KEY = "aio_FdAg28NUZ1PArEY9IjaXGYcz6NRy"
+# Feed keys to match Firebase structure
+FIREBASE_FEED_IDS = ["anhsang", "doam", "khoangcach", "led1", "nhietdo", "quat"]
+SENSOR_FEEDS = ["anhsang", "doam", "khoangcach", "nhietdo"]
+ACTUATOR_FEEDS = ["quat", "led1"]
+FIREBASE_URL = "https://dadn242group82-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
-# Callback functions
-def connected(client):
-    print("Kết nối thành công đến Adafruit IO")
-    for feed in AIO_FEED_IDS:
-        client.subscribe(feed)
-
-def subscribe(client, userdata, mid, granted_qos):
-    print(f"Đăng ký feed thành công")
-
-def disconnected(client):
-    print("Ngắt kết nối...")
-    sys.exit(1)
-
-def message(client, feed_id, payload):
-    print(f"Nhận dữ liệu từ {feed_id}: {payload}")
-    if isMicrobitConnected:
-        ser.write((f"{feed_id}:{payload}#").encode())
-
-# MQTT setup
-client = MQTTClient(AIO_USERNAME, AIO_KEY)
-client.on_connect = connected
-client.on_disconnect = disconnected
-client.on_message = message
-client.on_subscribe = subscribe
-client.connect()
-client.loop_background()
 
 # Serial port detection
 def getPort():
@@ -44,24 +20,14 @@ def getPort():
             return str(port).split(" ")[0]
     return None
 
-# Check for micro:bit connection
-isMicrobitConnected = False
-port = getPort()
-if port:
-    ser = serial.Serial(port=port, baudrate=115200)
-    isMicrobitConnected = True
-
-# Dictionary to hold the latest values
-latest_data = {}
-
-# Data processing
+# Data processing for serial reading
 def processData(data):
     data = data.replace("!", "").replace("#", "")
     splitData = data.split(":")
     if len(splitData) == 2:
         feed_id, value = splitData
         print(f"Nhận từ microcontroller: {feed_id} = {value}")
-        if feed_id in AIO_FEED_IDS:
+        if feed_id in FIREBASE_FEED_IDS:
             latest_data[feed_id] = value
 
 # Serial reading
@@ -70,7 +36,6 @@ def readSerial():
     global mess
     if ser.inWaiting() > 0:
         mess += ser.read(ser.inWaiting()).decode("UTF-8")
-        print(f"Nhận từ microcontroller: {mess}")
         while "!" in mess and "#" in mess:
             start = mess.find("!")
             end = mess.find("#")
@@ -80,17 +45,73 @@ def readSerial():
             else:
                 mess = mess[end+1:]
 
-# Main loop
+# Send to Firebase
+def sendToFirebase(feed_id, value):
+    url = f"{FIREBASE_URL}/{feed_id}.json"
+    try:
+        response = requests.put(url, json=value)
+        if response.status_code == 200:
+            print(f"Send sensor data to Firebase - {feed_id}: {value}")
+        else:
+            print(f"ERROR - Send {feed_id}: {response.text}")
+    except Exception as e:
+        print(f"ERROR - Firebase connection: {e}")
+
+# Main program
+isMicrobitConnected = False
+port = getPort()
+if port:
+    ser = serial.Serial(port=port, baudrate=115200)
+    isMicrobitConnected = True
+
 feed_index = 0
+latest_data = {}
+previous_values = {}
+prev_actuator_values = {"quat": None, "led1": None}
+
 while True:
     if isMicrobitConnected:
+        # Read sensor data from Yolobit then send to Firebase
         readSerial()
-        current_feed = AIO_FEED_IDS[feed_index]
-        if current_feed in latest_data:
-            value = latest_data[current_feed]
-            print(f"Gửi tới {current_feed}: {value}")
-            client.publish(current_feed, value)
-        else:
-            print(f"Chưa có dữ liệu cho {current_feed}, bỏ qua")
-        feed_index = (feed_index + 1) % len(AIO_FEED_IDS)
-        time.sleep(1)  # 2 seconds between sending each feed
+
+        current_feed = FIREBASE_FEED_IDS[feed_index]
+
+        if current_feed in SENSOR_FEEDS:
+            value = latest_data.get(current_feed)
+            if value is not None and previous_values.get(current_feed) != value:
+                sendToFirebase(current_feed, value)
+                previous_values[current_feed] = value
+
+        elif current_feed in ACTUATOR_FEEDS:
+            # Read actuator state from Firebase then send to Yolobit
+            url = f"{FIREBASE_URL}/{current_feed}.json"
+            try:
+                response = requests.get(url)
+                if response.status_code == 200:
+                    value = response.json()
+                    if prev_actuator_values.get(current_feed) != value:
+                        command = f"F:{value}#" if current_feed == "quat" else f"L:{value}#"
+                        ser.write(command.encode())
+                        print(f"Send command to Yolobit: {command}")
+                        prev_actuator_values[current_feed] = value
+                else:
+                    print(f"ERROR reading {current_feed} from Firebase: {response.text}")
+            except Exception as e:
+                print(f"ERROR connecting to Firebase for actuator: {e}")
+
+        feed_index = (feed_index + 1) % len(FIREBASE_FEED_IDS)
+    else:
+        # Send random data as a test
+        for feed_id in SENSOR_FEEDS:
+            if feed_id == "anhsang":
+                value = str(random.randint(100, 1000))
+            elif feed_id == "khoangcach":
+                value = str(random.randint(0, 100))
+            elif feed_id == "nhietdo":
+                value = str(round(random.uniform(20.0, 35.0), 1))
+            elif feed_id == "doam":
+                value = str(random.randint(30, 90))
+
+            if previous_values.get(feed_id) != value:
+                sendToFirebase(feed_id, value)
+                previous_values[feed_id] = value

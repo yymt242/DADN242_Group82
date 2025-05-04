@@ -16,8 +16,8 @@
 
 
     <div class="user-info">
-        <span><strong>Nguyễn Thành Đạt</strong></span>
-        <a href="#">Đăng xuất</a>
+        <span><strong id="user-email">Account email here</strong></span>
+        <a href="#" id="logout-link">Đăng xuất</a>
     </div>
 
     <!-- Room data section -->
@@ -55,7 +55,7 @@
                     </label>
                 </div>
             </div>
-            <div class="device-sub">Công suất <span class="blue">0%</span></div>
+            <div class="device-sub">Công suất <span class="blue">70%</span></div>
         </div>
 
         <div class="device-box active">
@@ -108,6 +108,130 @@
             <button>1 tháng</button>
         </div>
     </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+        import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCLE7kFEQc7ZIC9kgtY70auZ14NoLoltxQ",
+            authDomain: "dadn242group82.firebaseapp.com",
+            projectId: "dadn242group82",
+            storageBucket: "dadn242group82.firebasestorage.app",
+            messagingSenderId: "462160967009",
+            appId: "1:462160967009:web:813fae07b129707bb4c120",
+            measurementId: "G-V4M7Q5KX56",
+            databaseURL: "https://dadn242group82-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        window.firebase = { db, ref, get, set, onValue }; // Expose globally for script.js
+        const SENSOR_FEEDS = ["anhsang", "doam", "khoangcach", "nhietdo"];
+        const ACTUATOR_FEEDS = ["quat", "led1"];
+
+        let currentFeedIndex = 0;
+
+        // Read value from Firebase
+        async function fetchFeedData(feedKey) {
+            const { db, ref, get } = window.firebase;
+            const snapshot = await get(ref(db, feedKey));
+
+            if (!snapshot.exists()) {
+                console.warn(`${feedKey} has no data`);
+                return null;
+            }
+
+            const latestValue = snapshot.val();
+            const statusEl = document.getElementById(`${feedKey}-status`);
+
+            if (SENSOR_FEEDS.includes(feedKey)) {
+                let unit = "";
+                switch (feedKey) {
+                    case "anhsang": unit = " lm"; break;
+                    case "khoangcach": unit = " cm"; break;
+                    case "nhietdo": unit = " °C"; break;
+                    case "doam": unit = " %"; break;
+                }
+
+                statusEl.textContent = `${latestValue}${unit}`;
+            }
+
+            return latestValue;
+        }
+
+
+        // Circular fetch of **sensor data only**
+        function fetchFeedsInCircularManner() {
+            const feedKey = SENSOR_FEEDS[currentFeedIndex];
+            fetchFeedData(feedKey);
+            currentFeedIndex = (currentFeedIndex + 1) % SENSOR_FEEDS.length;
+        }
+        fetchFeedsInCircularManner();
+        setInterval(fetchFeedsInCircularManner, 100);
+
+        // Send actuator state only when user toggles
+        async function sendFeedData(feedKey, value) {
+            const { db, ref, set } = window.firebase;
+            await set(ref(db, feedKey), value);
+            console.log(`Sent ${value} to ${feedKey}`);
+
+            const statusEl = document.getElementById(`${feedKey}-status`);
+            statusEl.textContent = value === "1" ? "Bật" : "Tắt";
+            statusEl.className = `status ${value === "1" ? "blue" : "gray"}`;
+        }
+
+        // DOMContentLoaded: init only actuator toggles + initial sensor fetch
+        document.addEventListener("DOMContentLoaded", () => {
+            const switches = document.querySelectorAll(".switch input[type='checkbox']");
+            switches.forEach(toggle => {
+                const feedKey = toggle.getAttribute("data-feed");
+                if (ACTUATOR_FEEDS.includes(feedKey)) {
+                    toggle.addEventListener("change", () => {
+                        const value = toggle.checked ? "1" : "0";
+                        sendFeedData(feedKey, value);
+                    });
+
+                    // Load initial actuator status
+                    fetchFeedData(feedKey).then((value) => {
+                        const toggle = document.querySelector(`.switch input[data-feed="${feedKey}"]`);
+                        const statusEl = document.getElementById(`${feedKey}-status`);
+
+                        if (toggle && value !== null) {
+                            toggle.checked = value === "1";
+                            statusEl.textContent = value === "1" ? "Bật" : "Tắt";
+                            statusEl.className = `status ${value === "1" ? "blue" : "gray"}`;
+                        }
+                    });
+                }
+            });
+
+            // Initial load of sensor data
+            SENSOR_FEEDS.forEach(fetchFeedData);
+        });
+
+        document.getElementById("logout-link").addEventListener("click", function (event) {
+            event.preventDefault();
+
+            // Sign out from Firebase
+            signOut(auth).then(() => {
+                // Clear the stored email and redirect to the login page
+                localStorage.removeItem('userEmail');
+                window.location.href = "../Login/index.html"; // Or wherever you want to redirect
+            }).catch((error) => {
+                alert("Đăng xuất không thành công: " + error.message);
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const userEmail = localStorage.getItem('userEmail');
+            if (userEmail) {
+                document.getElementById("user-email").textContent = userEmail;
+            }
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 
