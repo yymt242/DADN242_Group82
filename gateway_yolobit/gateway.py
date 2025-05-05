@@ -5,9 +5,9 @@ import requests
 import random
 
 # Feed keys to match Firebase structure
-FIREBASE_FEED_IDS = ["anhsang", "doam", "khoangcach", "led1", "nhietdo", "quat"]
+FIREBASE_FEED_IDS = ["anhsang", "doam", "khoangcach", "nhietdo", "quat", "rgb"]
 SENSOR_FEEDS = ["anhsang", "doam", "khoangcach", "nhietdo"]
-ACTUATOR_FEEDS = ["quat", "led1"]
+ACTUATOR_FEEDS = ["quat", "rgb"]
 FIREBASE_URL = "https://dadn242group82-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
 

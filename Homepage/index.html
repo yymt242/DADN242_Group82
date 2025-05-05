@@ -55,7 +55,12 @@
                     </label>
                 </div>
             </div>
-            <div class="device-sub">Công suất <span class="blue">70%</span></div>
+            <div class="device-sub">
+                Công suất <span id="congsuat-value" class="blue">70%</span>
+            </div>
+            <div class="slider-container">
+                <input type="range" min="10" max="90" value="70" id="congsuat-slider">
+            </div>
         </div>
 
         <div class="device-box active">
@@ -71,7 +76,10 @@
                     </label>
                 </div>
             </div>
-            <div class="device-sub">Màu sắc <span class="light">🟡</span> | Độ sáng <span class="blue">80%</span></div>
+            <div class="device-sub">
+                Màu sắc
+                <input type="color" id="led1-color-picker" value="#ffff00">
+            </div>
         </div>
 
         <div class="device-box">
@@ -183,15 +191,26 @@
             statusEl.className = `status ${value === "1" ? "blue" : "gray"}`;
         }
 
-        // DOMContentLoaded: init only actuator toggles + initial sensor fetch
         document.addEventListener("DOMContentLoaded", () => {
+            const { db, ref, set, onValue } = window.firebase;
+
             const switches = document.querySelectorAll(".switch input[type='checkbox']");
             switches.forEach(toggle => {
                 const feedKey = toggle.getAttribute("data-feed");
                 if (ACTUATOR_FEEDS.includes(feedKey)) {
                     toggle.addEventListener("change", () => {
-                        const value = toggle.checked ? "1" : "0";
-                        sendFeedData(feedKey, value);
+                        const isChecked = toggle.checked;
+                        const statusValue = isChecked ? "1" : "0";
+
+                        // Special handling for "quat"
+                        if (feedKey === "quat") {
+                            const powerValue = document.getElementById("congsuat-slider").value;
+                            const valueToSend = isChecked ? powerValue : "0";
+                            set(ref(db, "quat"), valueToSend);
+                        } else {
+                            // Normal actuator
+                            set(ref(db, feedKey), statusValue);
+                        }
                     });
 
                     // Load initial actuator status
@@ -200,37 +219,103 @@
                         const statusEl = document.getElementById(`${feedKey}-status`);
 
                         if (toggle && value !== null) {
-                            toggle.checked = value === "1";
-                            statusEl.textContent = value === "1" ? "Bật" : "Tắt";
-                            statusEl.className = `status ${value === "1" ? "blue" : "gray"}`;
+                            toggle.checked = value !== "0";
+                            statusEl.textContent = value !== "0" ? "Bật" : "Tắt";
+                            statusEl.className = `status ${value !== "0" ? "blue" : "gray"}`;
                         }
                     });
                 }
             });
 
-            // Initial load of sensor data
-            SENSOR_FEEDS.forEach(fetchFeedData);
-
-            // Subscribe to real-time updates for actuators
+            // Real-time updates for actuators
             ACTUATOR_FEEDS.forEach(feedKey => {
-                const { db, ref, onValue } = window.firebase;
                 const feedRef = ref(db, feedKey);
-
                 onValue(feedRef, (snapshot) => {
                     const value = snapshot.val();
                     const toggle = document.querySelector(`.switch input[data-feed="${feedKey}"]`);
                     const statusEl = document.getElementById(`${feedKey}-status`);
 
-                    if (toggle) {
-                        toggle.checked = value === "1";
-                    }
+                    if (toggle) toggle.checked = value !== "0";
                     if (statusEl) {
-                        statusEl.textContent = value === "1" ? "Bật" : "Tắt";
-                        statusEl.className = `status ${value === "1" ? "blue" : "gray"}`;
+                        statusEl.textContent = value !== "0" ? "Bật" : "Tắt";
+                        statusEl.className = `status ${value !== "0" ? "blue" : "gray"}`;
                     }
                 });
             });
+
+            // Quạt: Công suất
+            const congsuatSlider = document.getElementById("congsuat-slider");
+            const congsuatValueEl = document.getElementById("congsuat-value");
+            const quatCheckbox = document.querySelector(`.switch input[data-feed="quat"]`);
+
+            if (congsuatSlider && congsuatValueEl) {
+                // When slider changes
+                congsuatSlider.addEventListener("input", (event) => {
+                    const value = event.target.value;
+                    congsuatValueEl.textContent = `${value}%`;
+
+                    // Sync to Firebase
+                    set(ref(db, "congsuatQuat"), value);
+
+                    // If quạt is ON, send the new power value to /quat
+                    if (quatCheckbox && quatCheckbox.checked) {
+                        set(ref(db, "quat"), value);
+                    }
+                });
+
+                // Sync slider UI with Firebase value
+                const congSuatRef = ref(db, "congsuatQuat");
+                onValue(congSuatRef, (snapshot) => {
+                    const value = snapshot.val();
+                    if (value !== null) {
+                        congsuatSlider.value = value;
+                        congsuatValueEl.textContent = `${value}%`;
+                    }
+                });
+            }
+
+
+            const colorPicker = document.getElementById("led1-color-picker");
+            const ledToggle = document.querySelector("input[data-feed='led1']");
+
+            if (colorPicker && ledToggle) {
+                const rgbRef = ref(db, "rgb");
+
+                // Handle toggle change
+                ledToggle.addEventListener("change", () => {
+                    const isChecked = ledToggle.checked;
+                    const hexColor = colorPicker.value;
+
+                    // Update led1 state
+                    set(ref(db, "led1"), isChecked ? "1" : "0");
+
+                    // Update rgb feed accordingly
+                    const rgbValue = isChecked ? hexColor : "#000000";
+                    set(rgbRef, rgbValue);
+                });
+
+                // Handle color picker change
+                colorPicker.addEventListener("input", () => {
+                    if (ledToggle.checked) {
+                        set(rgbRef, colorPicker.value);
+                    }
+                });
+
+                // Load current color from Firebase
+                onValue(rgbRef, (snapshot) => {
+                    const value = snapshot.val();
+                    if (value && /^#([0-9A-F]{6})$/i.test(value)) {
+                        colorPicker.value = value === "#000000" ? "#ffff00" : value;
+                    }
+                });
+            }
+
+
+
+            // Load initial sensor values
+            SENSOR_FEEDS.forEach(fetchFeedData);
         });
+
 
         document.getElementById("logout-link").addEventListener("click", function (event) {
             event.preventDefault();
