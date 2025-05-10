@@ -6,9 +6,9 @@ import random
 from datetime import datetime
 
 # Feed keys to match Firebase structure
-FIREBASE_FEED_IDS = ["anhsang", "doam", "khoangcach", "nhietdo", "quat", "rgb"]
+FIREBASE_FEED_IDS = ["anhsang", "doam", "khoangcach", "nhietdo", "quat", "rgb", "door"]
 SENSOR_FEEDS = ["anhsang", "doam", "khoangcach", "nhietdo"]
-ACTUATOR_FEEDS = ["quat", "rgb"]
+ACTUATOR_FEEDS = ["quat", "rgb", "door"]
 FIREBASE_URL = "https://dadn242group82-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
 # Serial port detection
@@ -92,6 +92,7 @@ while True:
                 sendToFirebase(current_feed, value)
                 previous_values[current_feed] = value
 
+        # In the 'elif current_feed in ACTUATOR_FEEDS:' block
         elif current_feed in ACTUATOR_FEEDS:
             url = f"{FIREBASE_URL}/{current_feed}.json"
             try:
@@ -99,7 +100,14 @@ while True:
                 if response.status_code == 200:
                     value = response.json()
                     if prev_actuator_values.get(current_feed) != value:
-                        command = f"F:{value}#" if current_feed == "quat" else f"L:{value}#"
+                        # Handle door feed differently
+                        if current_feed == "door":
+                            command = f"D:{value}#"
+                        elif current_feed == "quat":
+                            command = f"F:{value}#"
+                        else:  # If it's any other actuator (e.g., "rgb", "quat")
+                            command = f"L:{value}#"
+
                         ser.write(command.encode())
                         print(f"Send command to Yolobit: {command}")
                         prev_actuator_values[current_feed] = value
@@ -107,6 +115,7 @@ while True:
                     print(f"ERROR reading {current_feed} from Firebase: {response.text}")
             except Exception as e:
                 print(f"ERROR connecting to Firebase for actuator: {e}")
+
 
         feed_index = (feed_index + 1) % len(FIREBASE_FEED_IDS)
     else:
