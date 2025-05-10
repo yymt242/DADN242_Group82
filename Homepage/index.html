@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="vi">
 
 <head>
@@ -6,6 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ thống báo động an toàn</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
 </head>
 
 <body>
@@ -14,25 +20,16 @@
         <small>Nhóm 82 - Đồ án đa ngành HK242</small>
     </div>
 
-
     <div class="user-info">
         <span><strong id="user-email">Account email here</strong></span>
         <a href="#" id="logout-link">Đăng xuất</a>
-    </div>
-
-    <!-- Room data section -->
-    <div class="rooms">
-        <button>Phòng khách</button>
-        <button class="active">Phòng ngủ 1</button>
-        <button>Nhà bếp</button>
     </div>
 
     <div class="section">
         <div class="section-title">Môi trường</div>
         <div class="env-grid">
             <div class="env-box"><span>Ánh sáng</span><span id="anhsang-status">Loading...</span></div>
-            <div class="env-box highlight-box"><span>Phát hiện đột nhập</span><span
-                    id="khoangcach-status">Loading...</span></div>
+            <div class="env-box"><span>Phát hiện đột nhập</span><span id="khoangcach-status">Loading...</span></div>
             <div class="env-box"><span>Nhiệt độ</span><span id="nhietdo-status">Loading...</span></div>
             <div class="env-box"><span>Độ ẩm</span><span id="doam-status">Loading...</span></div>
         </div>
@@ -55,15 +52,13 @@
                     </label>
                 </div>
             </div>
-            <div class="device-sub">
-                Công suất <span id="congsuat-value" class="blue">70%</span>
-            </div>
-            <div class="slider-container">
+            <div class="slider-container" style="margin-top: -20px">
+                Công suất <span id="congsuat-value" class="blue">Loading</span>
                 <input type="range" min="10" max="90" value="70" id="congsuat-slider">
             </div>
         </div>
 
-        <div class="device-box active">
+        <div class="device-box">
             <div class="device-row">
                 <strong>Đèn</strong>
                 <div class="status-group">
@@ -76,7 +71,7 @@
                     </label>
                 </div>
             </div>
-            <div class="device-sub">
+            <div class="device-sub" style="margin-top: -45px">
                 Màu sắc
                 <input type="color" id="led1-color-picker" value="#ffff00">
             </div>
@@ -86,39 +81,52 @@
             <div class="device-row">
                 <strong>Cửa</strong>
                 <div class="status-group">
-                    <span class="status blue">Đang mở</span>
-                    <span class="mode auto">tự động</span>
+                    <span class="status gray" id="door-status">Loading...</span>
+                    <span class="mode">thủ công</span>
+                    <!-- Cửa -->
+                    <label class="switch">
+                        <input type="checkbox" data-feed="door">
+                        <span class="slider round"></span>
+                    </label>
                 </div>
             </div>
-            <div class="device-sub">
-                Ngưỡng khoảng cách tự động đóng cửa <span class="blue">12m</span>
-            </div>
-            <div class="slider-container">
-                <input type="range" min="0" max="20" value="12">
-            </div>
         </div>
     </div>
 
-
+    <!-- Data section -->
+    <div class="section-title">Lịch sử</div>
     <div class="data-section">
-        <div><strong>Dữ liệu:</strong> Đèn</div>
-        <div>
-            <button>Đồ thị</button>
-            <button>Danh sách</button>
+        <div class="data-header">
+            <strong>Chọn dữ liệu:</strong>
+            <select id="feed-selector">
+                <option value="anhsang">Ánh sáng</option>
+                <option value="doam">Độ ẩm</option>
+                <option value="khoangcach">Đột nhập</option>
+                <option value="nhietdo">Nhiệt độ</option>
+                <option value="quat">Quạt</option>
+                <option value="led1">Đèn</option>
+                <option value="door">Cửa</option>
+            </select>
         </div>
-        <div class="output-box"></div>
-        <div class="chart-buttons">
-            <button class="active">3 phút</button>
-            <button>1 giờ</button>
-            <button>5 giờ</button>
-            <button>1 ngày</button>
-            <button>1 tuần</button>
-            <button>1 tháng</button>
+
+        <div class="output-box">
+            <canvas id="data-chart" style="display: block; height: 250px; width: 100%; max-height: 250px;"></canvas>
+            <ul id="data-list" style="display: none;"></ul>
+        </div>
+
+        <div class="chart-buttons" id="time-range-buttons">
+            <button data-range="5m" class="active">5 phút</button>
+            <button data-range="1h">1 giờ</button>
+            <button data-range="5h">5 giờ</button>
+            <button data-range="1d">1 ngày</button>
+            <button data-range="1w">1 tuần</button>
         </div>
     </div>
+
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+        import { getDatabase, ref, get, set, onValue, off } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
         import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 
         const firebaseConfig = {
@@ -136,208 +144,471 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        window.firebase = { db, ref, get, set, onValue }; // Expose globally for script.js
         const SENSOR_FEEDS = ["anhsang", "doam", "khoangcach", "nhietdo"];
-        const ACTUATOR_FEEDS = ["quat", "led1"];
-
+        const ACTUATOR_FEEDS = ["quat", "led1", "door"];
         let currentFeedIndex = 0;
 
-        // Read value from Firebase
-        async function fetchFeedData(feedKey) {
-            const { db, ref, get } = window.firebase;
-            const snapshot = await get(ref(db, feedKey));
+        const UNITS = {
+            anhsang: " lm",
+            khoangcach: " cm",
+            nhietdo: " °C",
+            doam: " %"
+        };
 
-            if (!snapshot.exists()) {
-                console.warn(`${feedKey} has no data`);
-                return null;
-            }
+        window.firebase = { db, ref, get, set, onValue };
 
-            const latestValue = snapshot.val();
-            const statusEl = document.getElementById(`${feedKey}-status`);
-
-            if (SENSOR_FEEDS.includes(feedKey)) {
-                let unit = "";
-                switch (feedKey) {
-                    case "anhsang": unit = " lm"; break;
-                    case "khoangcach": unit = " cm"; break;
-                    case "nhietdo": unit = " °C"; break;
-                    case "doam": unit = " %"; break;
-                }
-
-                statusEl.textContent = `${latestValue}${unit}`;
-            }
-
-            return latestValue;
+        const userEmail = localStorage.getItem('userEmail');
+        if (userEmail) {
+            console.log('User is signed in:', userEmail);
+        } else {
+            window.location.href = '/login.html'; // Redirect to login if not signed in
         }
 
+        // Fetch a single feed value and update the UI
+        async function fetchFeedData(feedKey) {
+            try {
+                const snapshot = await get(ref(db, feedKey));
+                if (!snapshot.exists()) {
+                    console.warn(`${feedKey} has no data`);
+                    return null;
+                }
 
-        // Circular fetch of **sensor data only**
+                const value = snapshot.val();
+                const el = document.getElementById(`${feedKey}-status`);
+                if (el && SENSOR_FEEDS.includes(feedKey)) {
+                    el.textContent = `${value}${UNITS[feedKey] || ""}`;
+                }
+
+                return value;
+            } catch (err) {
+                console.error(`Error fetching ${feedKey}:`, err);
+                return null;
+            }
+        }
+
         function fetchFeedsInCircularManner() {
             const feedKey = SENSOR_FEEDS[currentFeedIndex];
             fetchFeedData(feedKey);
             currentFeedIndex = (currentFeedIndex + 1) % SENSOR_FEEDS.length;
         }
-        fetchFeedsInCircularManner();
-        setInterval(fetchFeedsInCircularManner, 100);
 
-        // Send actuator state only when user toggles
-        async function sendFeedData(feedKey, value) {
-            const { db, ref, set } = window.firebase;
-            await set(ref(db, feedKey), value);
-            console.log(`Sent ${value} to ${feedKey}`);
+        function updateStatusElement(el, value, onLabel = "Bật", offLabel = "Tắt") {
+            if (!el) return;
+            el.textContent = value !== "0" ? onLabel : offLabel;
+            el.className = `status ${value !== "0" ? "blue" : "gray"}`;
+        }
+        function setupActuatorSwitches() {
+            document.querySelectorAll(".switch input[type='checkbox']").forEach(toggle => {
+                const feedKey = toggle.dataset.feed;
+                if (!ACTUATOR_FEEDS.includes(feedKey)) return;
 
-            const statusEl = document.getElementById(`${feedKey}-status`);
-            statusEl.textContent = value === "1" ? "Bật" : "Tắt";
-            statusEl.className = `status ${value === "1" ? "blue" : "gray"}`;
+                toggle.addEventListener("change", async () => {
+                    const isChecked = toggle.checked;
+                    const value = isChecked ? "1" : "0";
+                    const timestamp = Date.now();  // Current timestamp in milliseconds
+
+                    // Send the latest value to Firebase
+                    await set(ref(db, feedKey), value);
+
+                    // Send historical value to Firebase (this is where we push the data with timestamp)
+                    const historyRef = ref(db, `sensor_history/${feedKey}/${timestamp}`);
+
+                    if (feedKey !== "quat") {
+                        {
+                            await set(historyRef, {
+                                value: value,
+                                timestamp: timestamp
+                            });
+                        }
+                    }
+
+                    if (feedKey === "quat") {
+                        const power = document.getElementById("congsuat-slider").value || "0";
+                        await set(ref(db, "quat"), isChecked ? power : "0");
+                    }
+
+                    // Optionally, for LED, store its color in the history too when turned on
+                    if (feedKey === "led1" && isChecked) {
+                        const color = document.getElementById("led1-color-picker").value || "#000000"; // Default to off color
+                        await set(ref(db, "rgb"), color);
+                    }
+                });
+
+                // Initial load
+                fetchFeedData(feedKey).then(value => {
+                    if (value === null) return;
+                    toggle.checked = value !== "0";
+                    updateStatusElement(document.getElementById(`${feedKey}-status`), value);
+                });
+
+                // Real-time update
+                onValue(ref(db, feedKey), snapshot => {
+                    const value = snapshot.val();
+                    toggle.checked = value !== "0";
+                    updateStatusElement(document.getElementById(`${feedKey}-status`), value);
+                });
+            });
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const { db, ref, set, onValue } = window.firebase;
+        function setupQuatPowerControl() {
+            const slider = document.getElementById("congsuat-slider");
+            const label = document.getElementById("congsuat-value");
+            const quatCheckbox = document.querySelector(`input[data-feed="quat"]`);
+            const sliderContainer = slider?.parentElement;
 
-            const switches = document.querySelectorAll(".switch input[type='checkbox']");
-            switches.forEach(toggle => {
-                const feedKey = toggle.getAttribute("data-feed");
-                if (ACTUATOR_FEEDS.includes(feedKey)) {
-                    toggle.addEventListener("change", () => {
-                        const isChecked = toggle.checked;
-                        const statusValue = isChecked ? "1" : "0";
+            if (!slider || !label || !sliderContainer) return;
 
-                        // Special handling for "quat"
-                        if (feedKey === "quat") {
-                            const powerValue = document.getElementById("congsuat-slider").value;
-                            const valueToSend = isChecked ? powerValue : "0";
-                            set(ref(db, "quat"), valueToSend);
-                        } else {
-                            // Normal actuator
-                            set(ref(db, feedKey), statusValue);
-                        }
+            // Sync slider position from lastQuat only after the checkbox is toggled
+            onValue(ref(db, "lastQuat"), snapshot => {
+                const value = snapshot.val();
+                if (value != null) {
+                    slider.value = value;
+                    label.textContent = `${value}%`;
+                }
+            });
+
+            // When the checkbox is toggled
+            quatCheckbox.addEventListener("change", async () => {
+                const isChecked = quatCheckbox.checked;
+                const power = isChecked ? slider.value : "0";  // Only set to slider value if checked
+                await set(ref(db, "quat"), power); // Update the quat value based on slider or "0" if unchecked
+            });
+
+            // When user changes the slider
+            slider.addEventListener("input", (e) => {
+                const value = e.target.value;
+                label.textContent = `${value}%`;
+                set(ref(db, "lastQuat"), value);
+
+                if (quatCheckbox?.checked) {
+                    set(ref(db, "quat"), value); // Update quat if checked
+                }
+            });
+
+            // Live update power label + show/hide slider
+            onValue(ref(db, "quat"), snapshot => {
+                const value = snapshot.val();
+                if (value != null) {
+                    label.textContent = `${value}%`;
+
+                    if (parseInt(value) === 0) {
+                        sliderContainer.style.display = "none";
+                    } else {
+                        sliderContainer.style.display = "block";
+                    }
+                }
+            });
+        }
+
+        function setupLEDControl() {
+            const colorPicker = document.getElementById("led1-color-picker");
+            const ledToggle = document.querySelector(`input[data-feed="led1"]`);
+            const rgbRef = ref(db, "rgb");
+            const lastrgbRef = ref(db, "lastRgb");
+            const ledRef = ref(db, "led1");
+
+            // Get the parent container <div class="device-sub">
+            const colorPickerContainer = colorPicker?.closest(".device-sub");
+
+            if (!colorPicker || !ledToggle || !colorPickerContainer) return;
+
+            // When the toggle is changed (on/off)
+            ledToggle.addEventListener("change", () => {
+                const isChecked = ledToggle.checked;
+                set(ledRef, isChecked ? "1" : "0");
+
+                if (isChecked) {
+                    get(lastrgbRef).then(snapshot => {
+                        const lastColor = snapshot.val() || "#ffff00";
+                        set(rgbRef, lastColor);
                     });
-
-                    // Load initial actuator status
-                    fetchFeedData(feedKey).then((value) => {
-                        const toggle = document.querySelector(`.switch input[data-feed="${feedKey}"]`);
-                        const statusEl = document.getElementById(`${feedKey}-status`);
-
-                        if (toggle && value !== null) {
-                            toggle.checked = value !== "0";
-                            statusEl.textContent = value !== "0" ? "Bật" : "Tắt";
-                            statusEl.className = `status ${value !== "0" ? "blue" : "gray"}`;
+                } else {
+                    get(rgbRef).then(snapshot => {
+                        const currentColor = snapshot.val();
+                        if (currentColor && currentColor !== "#000000") {
+                            set(lastrgbRef, currentColor);
                         }
+                        set(rgbRef, "#000000");
                     });
                 }
             });
 
-            // Real-time updates for actuators
+            // When color is picked and LED is ON
+            colorPicker.addEventListener("input", () => {
+                if (ledToggle.checked) {
+                    const selectedColor = colorPicker.value;
+                    set(rgbRef, selectedColor);
+                }
+            });
+
+            // Always update the color picker to reflect current RGB value
+            onValue(rgbRef, snapshot => {
+                const value = snapshot.val();
+                if (value && /^#([0-9A-F]{6})$/i.test(value)) {
+                    colorPicker.value = value;
+                }
+            });
+
+            // Show/hide the entire container based on LED state
+            onValue(ledRef, snapshot => {
+                const ledValue = snapshot.val();
+                colorPickerContainer.style.display = parseInt(ledValue) === 0 ? "none" : "block";
+            });
+        }
+
+
+        function setupLogout() {
+            document.getElementById("logout-link")?.addEventListener("click", (e) => {
+                e.preventDefault();
+                signOut(auth).then(() => {
+                    localStorage.removeItem("userEmail");
+                    window.location.href = "../Login/index.html";
+                }).catch((error) => {
+                    alert("Đăng xuất không thành công: " + error.message);
+                });
+            });
+        }
+
+        function showUserEmail() {
+            const email = localStorage.getItem("userEmail");
+            if (email) {
+                document.getElementById("user-email").textContent = email;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            SENSOR_FEEDS.forEach(fetchFeedData);  // Fetch initial data
+            setupActuatorSwitches();
+            setupQuatPowerControl();
+            setupLEDControl();
+            setupLogout();
+            showUserEmail();
+
+            // Add the setup for real-time listeners for the first time
+            setupRealtimeListeners();
+
+            const initialFeedKey = "anhsang"; // Explicitly set
+            document.getElementById("feed-selector").value = initialFeedKey; // Set dropdown
+            const initialTimeRange = document.querySelector("#time-range-buttons .active")?.dataset.range || "5m";
+
+            fetchHistoricalData(initialFeedKey, initialTimeRange).then(data => {
+                displayDataInChart(data);
+                setupRealtimeChartUpdates(initialFeedKey); // Add real-time updates for the initial chart
+            });
+
+        });
+
+        function setupRealtimeListeners() {
+            // Set up real-time listeners for all sensor feeds
+            SENSOR_FEEDS.forEach(feedKey => {
+                const feedRef = ref(db, feedKey);
+                onValue(feedRef, snapshot => {
+                    const value = snapshot.val();
+                    const el = document.getElementById(`${feedKey}-status`);
+                    if (el && value !== null) {
+                        el.textContent = `${value}${UNITS[feedKey] || ""}`;
+                    }
+                });
+            });
+
+            // Set up a real-time listener for actuator feeds as well
             ACTUATOR_FEEDS.forEach(feedKey => {
                 const feedRef = ref(db, feedKey);
-                onValue(feedRef, (snapshot) => {
+                onValue(feedRef, snapshot => {
                     const value = snapshot.val();
-                    const toggle = document.querySelector(`.switch input[data-feed="${feedKey}"]`);
-                    const statusEl = document.getElementById(`${feedKey}-status`);
+                    const el = document.getElementById(`${feedKey}-status`);
+                    if (el && value !== null) {
+                        el.textContent = value !== "0" ? "Bật" : "Tắt";
+                        el.className = `status ${value !== "0" ? "blue" : "gray"}`;
+                    }
 
-                    if (toggle) toggle.checked = value !== "0";
-                    if (statusEl) {
-                        statusEl.textContent = value !== "0" ? "Bật" : "Tắt";
-                        statusEl.className = `status ${value !== "0" ? "blue" : "gray"}`;
+                    if (feedKey === "quat") {
+                        const timestamp = Date.now();
+                        const historyRef = ref(db, `sensor_history/${feedKey}/${timestamp}`);
+                        set(historyRef, {
+                            value: value,
+                            timestamp: timestamp
+                        });
+                    }
+
+                    if (feedKey === "door") {
+                        const doorStatus = value !== "0" ? "Mở" : "Đóng";
+                        const doorEl = document.getElementById("door-status");
+                        if (doorEl) {
+                            doorEl.textContent = doorStatus;
+                            doorEl.className = `status ${value !== "0" ? "blue" : "gray"}`;
+                        }
                     }
                 });
             });
+        }
 
-            // Quạt: Công suất
-            const congsuatSlider = document.getElementById("congsuat-slider");
-            const congsuatValueEl = document.getElementById("congsuat-value");
-            const quatCheckbox = document.querySelector(`.switch input[data-feed="quat"]`);
 
-            if (congsuatSlider && congsuatValueEl) {
-                // When slider changes
-                congsuatSlider.addEventListener("input", (event) => {
-                    const value = event.target.value;
-                    congsuatValueEl.textContent = `${value}%`;
+        fetchFeedsInCircularManner();
+        setInterval(fetchFeedsInCircularManner, 100);
 
-                    // Sync to Firebase
-                    set(ref(db, "congsuatQuat"), value);
 
-                    // If quạt is ON, send the new power value to /quat
-                    if (quatCheckbox && quatCheckbox.checked) {
-                        set(ref(db, "quat"), value);
+        // Fetch historical data for the selected feed and time range
+        async function fetchHistoricalData(feedKey, timeRange) {
+            try {
+                const endTime = Date.now();
+                let startTime;
+
+                switch (timeRange) {
+                    case '5m': startTime = endTime - (5 * 60 * 1000); break;
+                    case '1h': startTime = endTime - (1 * 60 * 60 * 1000); break;
+                    case '5h': startTime = endTime - (5 * 60 * 60 * 1000); break;
+                    case '1d': startTime = endTime - (24 * 60 * 60 * 1000); break;
+                    case '1w': startTime = endTime - (7 * 24 * 60 * 60 * 1000); break;
+                    default: startTime = 0; // Show all data if no time range is selected
+                }
+
+                const historyRef = ref(db, `sensor_history/${feedKey}`);
+                const snapshot = await get(historyRef);
+
+                if (!snapshot.exists()) {
+                    console.warn(`No historical data for ${feedKey}`);
+                    return [];
+                }
+
+                const historyData = snapshot.val();
+                const filteredData = [];
+
+                // Filter the historical data based on the selected time range
+                for (const timestamp in historyData) {
+                    if (historyData.hasOwnProperty(timestamp)) {
+                        if (parseInt(timestamp) >= startTime) {
+                            filteredData.push({ timestamp: parseInt(timestamp), value: Number(historyData[timestamp].value) });
+                        }
                     }
-                });
+                }
 
-                // Sync slider UI with Firebase value
-                const congSuatRef = ref(db, "congsuatQuat");
-                onValue(congSuatRef, (snapshot) => {
-                    const value = snapshot.val();
-                    if (value !== null) {
-                        congsuatSlider.value = value;
-                        congsuatValueEl.textContent = `${value}%`;
-                    }
-                });
+                return filteredData;
+            } catch (err) {
+                console.error(`Error fetching historical data for ${feedKey}:`, err);
+                return [];
+            }
+        }
+        let currentChart = null;
+        let chartData = [];
+
+        function displayDataInChart(data) {
+            const ctx = document.getElementById("data-chart").getContext("2d");
+
+            chartData = data.map(item => ({
+                x: new Date(item.timestamp),
+                y: item.value
+            }));
+
+            if (currentChart) {
+                currentChart.data.datasets[0].data = chartData;
+                currentChart.update();
+                return;
             }
 
+            currentChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    datasets: [{
+                        label: "Dữ liệu theo thời gian",
+                        data: chartData,
+                        borderColor: "#0023c4",
+                        fill: false,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    animation: false,
+                    plugins: {
+                        legend: {
+                            display: false // Hides the legend
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: "time",
+                            time: {
+                                unit: "minute",
+                                tooltipFormat: 'Pp',
+                            },
+                            title: {
+                                display: true,
+                                text: "Thời gian",
+                            },
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: "Dữ liệu cảm biến",
+                            },
+                        },
+                    },
+                },
+            });
+        }
 
-            const colorPicker = document.getElementById("led1-color-picker");
-            const ledToggle = document.querySelector("input[data-feed='led1']");
+        let currentListenerRef = null;
 
-            if (colorPicker && ledToggle) {
-                const rgbRef = ref(db, "rgb");
-
-                // Handle toggle change
-                ledToggle.addEventListener("change", () => {
-                    const isChecked = ledToggle.checked;
-                    const hexColor = colorPicker.value;
-
-                    // Update led1 state
-                    set(ref(db, "led1"), isChecked ? "1" : "0");
-
-                    // Update rgb feed accordingly
-                    const rgbValue = isChecked ? hexColor : "#000000";
-                    set(rgbRef, rgbValue);
-                });
-
-                // Handle color picker change
-                colorPicker.addEventListener("input", () => {
-                    if (ledToggle.checked) {
-                        set(rgbRef, colorPicker.value);
-                    }
-                });
-
-                // Load current color from Firebase
-                onValue(rgbRef, (snapshot) => {
-                    const value = snapshot.val();
-                    if (value && /^#([0-9A-F]{6})$/i.test(value)) {
-                        colorPicker.value = value === "#000000" ? "#ffff00" : value;
-                    }
-                });
+        function setupRealtimeChartUpdates(feedKey) {
+            // Detach previous listener if any
+            if (currentListenerRef) {
+                off(currentListenerRef);
             }
 
+            const historyRef = ref(db, `sensor_history/${feedKey}`);
+            currentListenerRef = historyRef;
 
+            onValue(historyRef, snapshot => {
+                const data = snapshot.val();
+                if (!data) return;
 
-            // Load initial sensor values
-            SENSOR_FEEDS.forEach(fetchFeedData);
+                const latestTimestamp = Math.max(...Object.keys(data).map(Number));
+                const latestValue = data[latestTimestamp];
+
+                const newPoint = {
+                    x: new Date(latestTimestamp),
+                    y: Number(latestValue.value)
+                };
+
+                // Avoid duplicate timestamps
+                if (!chartData.find(point => point.x.getTime() === newPoint.x.getTime())) {
+                    chartData.push(newPoint);
+                    if (chartData.length > 100) chartData.shift(); // limit data points
+                    if (currentChart) {
+                        currentChart.data.datasets[0].data = chartData;
+                        currentChart.update();
+                    }
+                }
+            });
+        }
+
+        document.getElementById("feed-selector").addEventListener("change", async () => {
+            const feedKey = document.getElementById("feed-selector").value;
+            const timeRange = document.querySelector("#time-range-buttons .active")?.dataset.range || "5m";
+
+            const data = await fetchHistoricalData(feedKey, timeRange);
+            displayDataInChart(data);
+            setupRealtimeChartUpdates(feedKey);
         });
 
-
-        document.getElementById("logout-link").addEventListener("click", function (event) {
-            event.preventDefault();
-
-            // Sign out from Firebase
-            signOut(auth).then(() => {
-                // Clear the stored email and redirect to the login page
-                localStorage.removeItem('userEmail');
-                window.location.href = "../Login/index.html"; // Or wherever you want to redirect
-            }).catch((error) => {
-                alert("Đăng xuất không thành công: " + error.message);
+        const timeRangeButtons = document.querySelectorAll("#time-range-buttons button");
+        timeRangeButtons.forEach(button => {
+            button.addEventListener("click", async () => {
+                timeRangeButtons.forEach(b => b.classList.remove("active"));
+                button.classList.add("active");
+                const timeRange = button.dataset.range;
+                const feedKey = document.getElementById("feed-selector").value;
+                const data = await fetchHistoricalData(feedKey, timeRange);
+                displayDataInChart(data);
             });
         });
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const userEmail = localStorage.getItem('userEmail');
-            if (userEmail) {
-                document.getElementById("user-email").textContent = userEmail;
-            }
+        document.getElementById("feed-selector").addEventListener("change", async () => {
+            const feedKey = document.getElementById("feed-selector").value;
+            const timeRange = document.querySelector("#time-range-buttons .active")?.dataset.range || "5m";
+            const data = await fetchHistoricalData(feedKey, timeRange);
+            displayDataInChart(data);
         });
     </script>
-    <script src="script.js"></script>
 </body>
 
 </html>

@@ -3,13 +3,13 @@ import time
 import sys
 import requests
 import random
+from datetime import datetime
 
 # Feed keys to match Firebase structure
 FIREBASE_FEED_IDS = ["anhsang", "doam", "khoangcach", "nhietdo", "quat", "rgb"]
 SENSOR_FEEDS = ["anhsang", "doam", "khoangcach", "nhietdo"]
 ACTUATOR_FEEDS = ["quat", "rgb"]
 FIREBASE_URL = "https://dadn242group82-default-rtdb.asia-southeast1.firebasedatabase.app/"
-
 
 # Serial port detection
 def getPort():
@@ -45,17 +45,28 @@ def readSerial():
             else:
                 mess = mess[end+1:]
 
-# Send to Firebase
+# Send to Firebase (latest value + historical log)
 def sendToFirebase(feed_id, value):
-    url = f"{FIREBASE_URL}/{feed_id}.json"
+    timestamp = int(time.time() * 1000)  # Unix timestamp in milliseconds
+
+    # 1. Send latest value
+    latest_url = f"{FIREBASE_URL}/{feed_id}.json"
+    # 2. Send to history
+    history_url = f"{FIREBASE_URL}/sensor_history/{feed_id}/{timestamp}.json"
+
     try:
-        response = requests.put(url, json=value)
-        if response.status_code == 200:
-            print(f"Send sensor data to Firebase - {feed_id}: {value}")
+        latest_response = requests.put(latest_url, json=value)
+        history_response = requests.put(history_url, json={
+            "value": value,
+            "timestamp": timestamp
+        })
+
+        if latest_response.status_code == 200 and history_response.status_code == 200:
+            print(f"[OK] {feed_id}: {value} @ {timestamp}")
         else:
-            print(f"ERROR - Send {feed_id}: {response.text}")
+            print(f"[ERR] {feed_id}: {latest_response.text} / {history_response.text}")
     except Exception as e:
-        print(f"ERROR - Firebase connection: {e}")
+        print(f"[ERR] Exception sending {feed_id}: {e}")
 
 # Main program
 isMicrobitConnected = False
@@ -71,7 +82,6 @@ prev_actuator_values = {"quat": None, "led1": None}
 
 while True:
     if isMicrobitConnected:
-        # Read sensor data from Yolobit then send to Firebase
         readSerial()
 
         current_feed = FIREBASE_FEED_IDS[feed_index]
@@ -83,7 +93,6 @@ while True:
                 previous_values[current_feed] = value
 
         elif current_feed in ACTUATOR_FEEDS:
-            # Read actuator state from Firebase then send to Yolobit
             url = f"{FIREBASE_URL}/{current_feed}.json"
             try:
                 response = requests.get(url)
@@ -101,7 +110,7 @@ while True:
 
         feed_index = (feed_index + 1) % len(FIREBASE_FEED_IDS)
     else:
-        # Send random data as a test
+        # Simulate data if no device is connected
         for feed_id in SENSOR_FEEDS:
             if feed_id == "anhsang":
                 value = str(random.randint(100, 1000))
