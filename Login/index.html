@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.8.95/css/materialdesignicons.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/css/login.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -33,7 +34,7 @@
           <a href="#" class="forgot-password-link" id="forgot-password">Quên mật khẩu?</a>
           <p class="login-wrapper-footer-text">
             Chưa có tài khoản?
-            <a href="#" id="switch-to-register" class="text-reset">Đăng ký tại đây</a>
+            <a href="#" id="switch-to-register" class="link2">Đăng ký tại đây</a>
           </p>
         </form>
 
@@ -55,7 +56,7 @@
             onclick="registerAccount()" />
           <p class="login-wrapper-footer-text">
             Đã có tài khoản?
-            <a href="#" id="switch-to-login" class="text-reset">Đăng nhập tại đây</a>
+            <a href="#" id="switch-to-login" class="link2">Đăng nhập tại đây</a>
           </p>
         </form>
       </div>
@@ -118,7 +119,11 @@
           window.location.href = "../Homepage/index.html";
         })
         .catch((error) => {
-          alert("Đăng nhập thất bại: " + error.message);
+          Swal.fire({
+            icon: 'error',
+            title: 'Đăng nhập thất bại',
+            text: error.message
+          });
         });
     };
 
@@ -131,39 +136,67 @@
       const confirmPassword = document.getElementById("reg-confirm-password").value;
 
       if (password !== confirmPassword) {
-        alert("Mật khẩu không khớp. Vui lòng kiểm tra lại.");
+        Swal.fire({
+          icon: 'warning',
+          title: 'Mật khẩu không khớp',
+          text: 'Vui lòng kiểm tra lại.'
+        });
         return;
       }
 
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-          alert("Đăng ký thành công");
+          Swal.fire({
+            icon: 'success',
+            title: 'Đăng ký thành công',
+          });
           document.getElementById("register-form").reset();
           $('#register-form').hide();
           $('#login-form').show();
           $('#form-title').text('Đăng nhập');
         })
         .catch((error) => {
-          alert("Đăng ký không thành công: " + error.message);
+          Swal.fire({
+            icon: 'error',
+            title: 'Đăng ký không thành công',
+            text: error.message
+          });
         });
     };
 
   </script>
   <script>
     document.getElementById("forgot-password").addEventListener("click", function () {
-      const email = prompt("Please enter your email to reset password:");
-      if (email) {
-        import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js").then(({ getAuth, sendPasswordResetEmail }) => {
-          const auth = getAuth();
-          sendPasswordResetEmail(auth, email)
-            .then(() => {
-              alert("Đã gửi email đặt lại mật khẩu.");
-            })
-            .catch((error) => {
-              alert("Lỗi: " + error.message);
-            });
-        });
-      }
+      Swal.fire({
+        title: 'Đặt lại mật khẩu',
+        input: 'email',
+        inputLabel: 'Nhập email của bạn để đặt lại mật khẩu',
+        inputPlaceholder: 'email@example.com',
+        showCancelButton: true,
+        confirmButtonText: 'Gửi',
+        cancelButtonText: 'Hủy'
+      }).then((result) => {
+        if (result.isConfirmed && result.value) {
+          import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js").then(({ getAuth, sendPasswordResetEmail }) => {
+            const auth = getAuth();
+            sendPasswordResetEmail(auth, result.value)
+              .then(() => {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Thành công',
+                  text: 'Đã gửi email đặt lại mật khẩu.'
+                });
+              })
+              .catch((error) => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Lỗi',
+                  text: error.message
+                });
+              });
+          });
+        }
+      });
     });
   </script>
 </body>

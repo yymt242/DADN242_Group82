@@ -92,3 +92,8 @@ html {
 .text-reset:hover {
   text-decoration: underline;
 }
+
+.link2 {
+  color: #007bff;
+  text-decoration: underline;
+}

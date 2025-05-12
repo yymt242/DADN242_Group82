@@ -16,6 +16,8 @@ Cập nhật firmware?
 
 Nạp chương trình?
 
+Reset: Nhấn nút A 3s > nhấn nút Reset 1s (vẫn giữ nút A) > Thả nút A
+
 Sensors:
 
 - Khoảng cách: P3 - P6
