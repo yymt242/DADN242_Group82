@@ -111,14 +111,19 @@ function setupActuatorSwitches() {
         fetchFeedData(feedKey).then(value => {
             if (value === null) return;
             toggle.checked = value !== "0";
-            updateStatusElement(document.getElementById(`${feedKey}-status`), value);
+            if (feedKey !== "door") {
+                updateStatusElement(document.getElementById(`${feedKey}-status`), value);
+            }
+
         });
 
         // Real-time update
         onValue(ref(db, feedKey), snapshot => {
             const value = snapshot.val();
             toggle.checked = value !== "0";
-            updateStatusElement(document.getElementById(`${feedKey}-status`), value);
+            if (feedKey !== "door") {
+                updateStatusElement(document.getElementById(`${feedKey}-status`), value);
+            }
         });
     });
 }
@@ -128,34 +133,30 @@ function setupQuatPowerControl() {
     const label = document.getElementById("congsuat-value");
     const quatCheckbox = document.querySelector(`input[data-feed="quat"]`);
     const sliderContainer = slider?.parentElement;
-    const hiddenInput = document.getElementById("congsuat-hidden");
 
-    if (!slider || !label || !sliderContainer || !hiddenInput || !quatCheckbox) return;
+    if (!slider || !label || !sliderContainer) return;
 
     // Sync slider position from lastQuat only after the checkbox is toggled
     onValue(ref(db, "lastQuat"), snapshot => {
         const value = snapshot.val();
         if (value != null) {
-            // Update slider value and display percentage
-            slider.noUiSlider.set(value);  // Use noUiSlider's set method to update the value
+            slider.value = value;
             label.textContent = `${value}%`;
-            hiddenInput.value = value;  // Update hidden input as well
         }
     });
 
     // When the checkbox is toggled
     quatCheckbox.addEventListener("change", async () => {
         const isChecked = quatCheckbox.checked;
-        const power = isChecked ? hiddenInput.value : "0";  // Set to slider value or "0"
+        const power = isChecked ? slider.value : "0";  // Only set to slider value if checked
         await set(ref(db, "quat"), power); // Update the quat value based on slider or "0" if unchecked
     });
 
     // When user changes the slider
-    slider.noUiSlider.on("update", (values) => {
-        const value = Math.round(values[0]);
+    slider.addEventListener("input", (e) => {
+        const value = e.target.value;
         label.textContent = `${value}%`;
-        hiddenInput.value = value;  // Sync with the hidden input
-        set(ref(db, "lastQuat"), value); // Update lastQuat in the database
+        set(ref(db, "lastQuat"), value);
 
         if (quatCheckbox?.checked) {
             set(ref(db, "quat"), value); // Update quat if checked
@@ -168,7 +169,6 @@ function setupQuatPowerControl() {
         if (value != null) {
             label.textContent = `${value}%`;
 
-            // Show/hide slider based on quat value
             if (parseInt(value) === 0) {
                 sliderContainer.style.display = "none";
             } else {
@@ -177,6 +177,7 @@ function setupQuatPowerControl() {
         }
     });
 }
+
 
 function setupLEDControl() {
     const colorPicker = document.getElementById("led1-color-picker");
@@ -250,7 +251,7 @@ function setupLogout() {
 function showUserEmail() {
     const email = localStorage.getItem("userEmail");
     if (email) {
-        document.getElementById("user-email").textContent = email;
+        document.getElementById("user-email").textContent = `Xin chào, ${email}`;
     }
 }
 
@@ -323,7 +324,7 @@ function setupRealtimeListeners() {
 
 
 fetchFeedsInCircularManner();
-setInterval(fetchFeedsInCircularManner, 100);
+setInterval(fetchFeedsInCircularManner, 50);
 
 
 // Fetch historical data for the selected feed and time range
@@ -493,57 +494,234 @@ const alertAudio = new Audio('./audio/beep.wav');
 alertAudio.loop = true;
 
 function checkIntruder() {
-    const khoangcachStatus = document.getElementById("khoangcach-status");
-    const threshold = 50;
-    const value = parseFloat(khoangcachStatus.textContent.replace(" cm", ""));
-    return value > threshold;
+    const value = parseFloat(document.getElementById("khoangcach-status").textContent.replace(" cm", ""));
+
+    return get(ref(db, "thresholds/distance")).then(snapshot => {
+        const threshold = snapshot.val();
+        return value < threshold;
+    });
 }
 
-function updateIntruderStatus() {
-    const isIntruder = checkIntruder();
+async function updateAutoStatus() {
+    const isIntruder = await checkIntruder();
+
     const warningStatus = document.getElementById("warning-status");
-
-    const anhsangStatus = document.getElementById("anhsang-status");
     const khoangcachStatus = document.getElementById("khoangcach-status");
-    const nhietdoStatus = document.getElementById("nhietdo-status");
-    const doamStatus = document.getElementById("doam-status");
-
     const warningZone = document.querySelector(".warning-zone");
     const icon = document.getElementById("intruder-status-icon");
 
     if (isIntruder) {
+        const warningRef = ref(db, 'warning');
+        set(warningRef, "1");
+
         warningStatus.textContent = "Phát hiện có đột nhập";
         warningStatus.style.color = "white";
         warningZone.classList.add("blinking");
         icon.src = "./image/warning.png";
-
-        doamStatus.style.color = "red";
         khoangcachStatus.style.color = "red";
-        nhietdoStatus.style.color = "red";
-        anhsangStatus.style.color = "red";
-
-        // Play audio
         if (alertAudio.paused) {
             alertAudio.play();
         }
+        // Close the door if it's open
+        const doorRef = ref(db, 'door');
+        set(doorRef, "0");
     } else {
+        const warningRef = ref(db, 'warning');
+        set(warningRef, "0");
+
         warningStatus.textContent = "Không có đột nhập";
         warningStatus.style.color = "black";
         warningZone.classList.remove("blinking");
         icon.src = "./image/safe.png";
-
-        doamStatus.style.color = "#0023c4";
         khoangcachStatus.style.color = "#0023c4";
-        nhietdoStatus.style.color = "#0023c4";
-        anhsangStatus.style.color = "#0023c4";
-
-        // Stop audio
         if (!alertAudio.paused) {
             alertAudio.pause();
             alertAudio.currentTime = 0;
         }
     }
+
+    const anhsangStatus = document.getElementById("anhsang-status");
+    const nhietdoStatus = document.getElementById("nhietdo-status");
+
+    // If the mode is auto, do this
+    const modeRef = ref(db, "mode");
+    const modeSnapshot = await get(modeRef);
+    const mode = modeSnapshot.val();
+    if (mode !== "auto") {
+        // Remove the highlight if in manual mode
+        anhsangStatus.style.color = "#0023c4";
+        nhietdoStatus.style.color = "#0023c4";
+        return;
+    }
+
+    const lightThreshold = await get(ref(db, "thresholds/light")).then(snapshot => snapshot.val());
+    const tempThreshold = await get(ref(db, "thresholds/temperature")).then(snapshot => snapshot.val());
+    const lightValue = parseFloat(anhsangStatus.textContent.replace(" lm", ""));
+    const tempValue = parseFloat(nhietdoStatus.textContent.replace(" °C", ""));
+    if (lightValue < lightThreshold) {
+        anhsangStatus.style.color = "red";
+        // Turn on the light if it's off
+        const ledRef = ref(db, 'led1');
+        set(ledRef, "1");
+    } else {
+        anhsangStatus.style.color = "#0023c4";
+        // Turn off the light if it's on
+        const ledRef = ref(db, 'led1');
+        set(ledRef, "0");
+    }
+    if (tempValue > tempThreshold) {
+        nhietdoStatus.style.color = "red";
+        // Turn on the fan if it's off
+        const fanRef = ref(db, 'quat');
+        const lastQuatRef = ref(db, 'lastQuat');
+        const lastQuatSnapshot = await get(lastQuatRef);
+        const lastQuatValue = lastQuatSnapshot.val() || "0";
+        // Set the fan to the last known power level
+        set(fanRef, lastQuatValue);
+    } else {
+        nhietdoStatus.style.color = "#0023c4";
+        // Turn off the fan if it's on
+        const fanRef = ref(db, 'quat');
+        set(fanRef, "0");
+    }
 }
 
-setInterval(updateIntruderStatus, 100);
-window.onload = updateIntruderStatus;
+
+setInterval(updateAutoStatus, 100);
+window.onload = updateAutoStatus;
+
+
+
+
+function setupAutoStatusListeners() {
+    // Door status -> distance-threshold-status
+    const doorRef = ref(db, 'door');
+    onValue(doorRef, snapshot => {
+        const doorVal = Number(snapshot.val());
+        const doorText = doorVal === 1 ? "Cửa: Mở" : "Cửa: Đóng";
+        const doorEl = document.getElementById("distance-threshold-status");
+        if (doorEl) doorEl.textContent = doorText;
+        doorEl.className = doorVal === 1 ? "status blue" : "status gray";
+    });
+
+    // LED status -> light-threshold-status
+    const ledRef = ref(db, 'led1');
+    onValue(ledRef, snapshot => {
+        const ledVal = Number(snapshot.val());
+        const ledText = ledVal === 1 ? "Đèn: Bật" : "Đèn: Tắt";
+        const ledEl = document.getElementById("light-threshold-status");
+        if (ledEl) ledEl.textContent = ledText;
+        ledEl.className = ledVal === 1 ? "status blue" : "status gray";
+    });
+
+    // Fan status -> temp-threshold-status
+    const fanRef = ref(db, 'quat');
+    onValue(fanRef, snapshot => {
+        const fanVal = Number(snapshot.val());
+        const fanText = fanVal > 0 ? "Quạt: Bật" : "Quạt: Tắt";
+        const fanEl = document.getElementById("temp-threshold-status");
+        if (fanEl) fanEl.textContent = fanText;
+        fanEl.className = fanVal > 0 ? "status blue" : "status gray";
+    });
+}
+
+// Call this once when initializing
+setupAutoStatusListeners();
+
+
+/* Auto-Manual mode switching button */
+document.addEventListener("DOMContentLoaded", () => {
+    const manualBtn = document.getElementById("manual-btn");
+    const autoBtn = document.getElementById("auto-btn");
+    const manualMode = document.querySelector(".manual-mode");
+    const autoMode = document.querySelector(".auto-mode");
+
+    function setMode(mode) {
+        if (mode === "manual") {
+            manualBtn.classList.add("active");
+            autoBtn.classList.remove("active");
+            manualMode.style.display = "block";
+            autoMode.style.display = "none";
+        } else if (mode === "auto") {
+            autoBtn.classList.add("active");
+            manualBtn.classList.remove("active");
+            manualMode.style.display = "none";
+            autoMode.style.display = "block";
+        }
+
+        // Save mode to Firebase
+        set(ref(db, "mode"), mode);
+    }
+
+    // Event listeners
+    manualBtn.addEventListener("click", () => setMode("manual"));
+    autoBtn.addEventListener("click", () => setMode("auto"));
+
+    // Get initial mode from Firebase
+    onValue(ref(db, "mode"), (snapshot) => {
+        const mode = snapshot.val();
+        if (mode === "manual" || mode === "auto") {
+            // Prevent double-writing when loading
+            manualBtn.classList.remove("active");
+            autoBtn.classList.remove("active");
+
+            if (mode === "manual") {
+                manualBtn.classList.add("active");
+                manualMode.style.display = "block";
+                autoMode.style.display = "none";
+            } else {
+                autoBtn.classList.add("active");
+                manualMode.style.display = "none";
+                autoMode.style.display = "block";
+                setupAutoStatusListeners(); // Set up auto mode listeners
+            }
+        }
+    });
+});
+
+
+/* Threshold sliders */
+document.addEventListener("DOMContentLoaded", () => {
+    const sliders = [
+        {
+            sliderId: "distance-threshold-slider",
+            valueId: "distance-threshold-value",
+            dbKey: "thresholds/distance"
+        },
+        {
+            sliderId: "light-threshold-slider",
+            valueId: "light-threshold-value",
+            dbKey: "thresholds/light"
+        },
+        {
+            sliderId: "temp-threshold-slider",
+            valueId: "temp-threshold-value",
+            dbKey: "thresholds/temperature"
+        }
+    ];
+
+    sliders.forEach(({ sliderId, valueId, dbKey }) => {
+        const slider = document.getElementById(sliderId);
+        const valueSpan = document.getElementById(valueId);
+        const suffix = dbKey.includes("temperature") ? "°C" :
+            dbKey.includes("light") ? " lm" :
+                dbKey.includes("distance") ? " cm" : "";
+
+        // Load initial value from Firebase
+        onValue(ref(db, dbKey), (snapshot) => {
+            const val = snapshot.val();
+            if (val !== null) {
+                slider.value = val;
+                valueSpan.textContent = `${val}${suffix}`;
+            }
+        });
+
+        // Update display and save to Firebase on input
+        slider.addEventListener("input", () => {
+            const val = parseInt(slider.value, 10);
+            valueSpan.textContent = `${val}${suffix}`;
+            set(ref(db, dbKey), val);
+        });
+    });
+
+});

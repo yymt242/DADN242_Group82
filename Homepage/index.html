@@ -4,13 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống báo động an toàn</title>
+    <title>Hệ thống báo động an toàn cho gia đình</title>
 
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+    <link rel="icon" type="image/x-icon" href="imageres_78.ico">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
-    <link rel="stylesheet" href="slider.css">
 
     <script type="module" src="./script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -28,10 +25,16 @@
     </div>
 
     <!-- Account section -->
+    <div class="nav-buttons">
+        <a href="../Account/index.html">Cài đặt tài khoản</a>
+    </div>
+
     <div class="user-info">
         <span><strong id="user-email">Account email here</strong></span>
         <a href="#" id="logout-link">Đăng xuất</a>
     </div>
+
+
 
     <!-- Sensor section -->
     <div class="section">
@@ -52,100 +55,140 @@
     <div class="section">
         <div class="section-title">Điều khiển thiết bị</div>
 
-        <!-- Quạt -->
-        <div class="device-box">
-            <div class="device-row">
-                <strong>Quạt</strong>
-                <div class="status-group">
-                    <span class="status gray" id="quat-status">Loading...</span>
+        <!-- Chế độ điều khiển -->
+        <div class="mode-toggle-group">
+            <button id="manual-btn" class="mode-btn active">Thủ công</button>
+            <button id="auto-btn" class="mode-btn">Tự động</button>
+        </div>
 
-                    <label class="switch">
-                        <input type="checkbox" data-feed="quat">
-                        <span class="slider round"></span>
-                    </label>
+        <div class="manual-mode">
+            <!-- Quạt -->
+            <div class="device-box">
+                <div class="device-row">
+                    <strong>Quạt</strong>
+                    <div class="status-group">
+                        <span class="status gray" id="quat-status">Loading...</span>
+
+                        <label class="switch">
+                            <input type="checkbox" data-feed="quat">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Công suất: <span id="congsuat-value" class="blue">Loading</span>
+                    <input type="range" min="10" max="90" value="70" id="congsuat-slider">
                 </div>
             </div>
-            <div class="slider-container" style="margin-top: -5px; margin-left: -5px; width: 100%;">
-                Công suất <span id="congsuat-value" class="blue">Loading</span>
-                <div id="congsuat-slider"></div>
-                <input type="hidden" id="congsuat-hidden" value="70">
-            </div>
 
-
-        </div>
-
-        <!-- Đèn -->
-        <div class="device-box">
-            <div class="device-row">
-                <strong>Đèn</strong>
-                <div class="status-group">
-                    <span class="status gray" id="led1-status">Loading...</span>
-                    <label class="switch">
-                        <input type="checkbox" data-feed="led1">
-                        <span class="slider round"></span>
-                    </label>
+            <!-- Đèn -->
+            <div class="device-box">
+                <div class="device-row">
+                    <strong>Đèn</strong>
+                    <div class="status-group">
+                        <span class="status gray" id="led1-status">Loading...</span>
+                        <label class="switch">
+                            <input type="checkbox" data-feed="led1">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="device-sub" style="margin-top: -45px">
+                    Màu sắc
+                    <input type="color" id="led1-color-picker" value="#ffff00">
                 </div>
             </div>
-            <div class="device-sub" style="margin-top: -45px">
-                Màu sắc
-                <input type="color" id="led1-color-picker" value="#ffff00">
-            </div>
-        </div>
 
-        <!-- Cửa -->
-        <div class="device-box">
-            <div class="device-row">
-                <strong>Cửa</strong>
-                <div class="status-group">
-                    <span class="status gray" id="door-status">Loading...</span>
+            <!-- Cửa -->
+            <div class="device-box">
+                <div class="device-row">
+                    <strong>Cửa</strong>
+                    <div class="status-group">
+                        <span class="status gray" id="door-status">Loading...</span>
 
-                    <label class="switch">
-                        <input type="checkbox" data-feed="door">
-                        <span class="slider round"></span>
-                    </label>
+                        <label class="switch">
+                            <input type="checkbox" data-feed="door">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="auto-mode">
+            <!-- Temperature Threshold -->
+            <div class="device-box">
+                <div class="device-row">
+                    <strong>Ngưỡng nhiệt độ để bật quạt</strong>
+                    <div class="status-group">
+                        <span class="status gray" id="temp-threshold-status">Loading...</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Nhiệt độ trên mức: <span id="temp-threshold-value" class="blue">Loading</span>
+                    <input type="range" min="1" max="100" value="27" id="temp-threshold-slider">
+                </div>
+            </div>
 
-    <!-- Data section -->
-    <div class="section-title">Lịch sử dữ liệu</div>
-    <div class="data-section">
-        <div class="data-header">
-            <strong>Chọn dữ liệu:</strong>
-            <select id="feed-selector">
-                <option value="anhsang">Ánh sáng</option>
-                <option value="doam">Độ ẩm</option>
-                <option value="khoangcach">Khoảng cách</option>
-                <option value="nhietdo">Nhiệt độ</option>
-                <option value="quat">Quạt</option>
-                <option value="led1">Đèn</option>
-                <option value="door">Cửa</option>
-            </select>
+            <!-- Light Threshold -->
+            <div class="device-box">
+                <div class="device-row">
+                    <strong>Ngưỡng ánh sáng để bật đèn</strong>
+                    <div class="status-group">
+                        <span class="status gray" id="light-threshold-status">Loading...</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Ánh sáng dưới mức: <span id="light-threshold-value" class="blue">Loading</span>
+                    <input type="range" min="1" max="1000" value="400" id="light-threshold-slider">
+                </div>
+            </div>
+
+            <!-- Distance Threshold -->
+            <div class="device-box">
+                <div class="device-row">
+                    <strong>Ngưỡng khoảng cách để báo động</strong>
+                    <div class="status-group">
+                        <span class="status gray" id="distance-threshold-status">Loading...</span>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    Khoảng cách dưới mức: <span id="distance-threshold-value" class="blue">Loading</span>
+                    <input type="range" min="1" max="199" value="50" id="distance-threshold-slider">
+                </div>
+            </div>
         </div>
 
-        <div class="output-box">
-            <canvas id="data-chart" style="display: block; height: 250px; width: 100%; max-height: 250px;"></canvas>
-            <ul id="data-list" style="display: none;"></ul>
+
+        <!-- Data section -->
+        <div class="section-title">Lịch sử dữ liệu</div>
+        <div class="data-section">
+            <div class="data-header">
+                <strong>Chọn dữ liệu:</strong>
+                <select id="feed-selector">
+                    <option value="anhsang">Ánh sáng</option>
+                    <option value="doam">Độ ẩm</option>
+                    <option value="khoangcach">Khoảng cách</option>
+                    <option value="nhietdo">Nhiệt độ</option>
+                    <option value="quat">Quạt</option>
+                    <option value="led1">Đèn</option>
+                    <option value="door">Cửa</option>
+                </select>
+            </div>
+
+            <div class="output-box">
+                <canvas id="data-chart"></canvas>
+                <ul id="data-list" style="display: none;"></ul>
+            </div>
+
+            <div class="chart-buttons" id="time-range-buttons">
+                <button data-range="5m" class="active">5 phút</button>
+                <button data-range="1h">1 giờ</button>
+                <button data-range="5h">5 giờ</button>
+                <button data-range="1d">1 ngày</button>
+                <button data-range="1w">1 tuần</button>
+            </div>
         </div>
 
-        <div class="chart-buttons" id="time-range-buttons">
-            <button data-range="5m" class="active">5 phút</button>
-            <button data-range="1h">1 giờ</button>
-            <button data-range="5h">5 giờ</button>
-            <button data-range="1d">1 ngày</button>
-            <button data-range="1w">1 tuần</button>
-        </div>
-    </div>
-
-
-    <script src="js/jquery-3.3.1.min.js"></script>
-    <script src="js/moment.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/tooplate-scripts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
-    <script src="js/createSlider.js"></script>
 </body>
 
 </html>

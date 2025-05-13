@@ -41,12 +41,43 @@ body {
 }
 
 .header {
-    background: var(--primary-color);
-    color: white;
-    padding: 15px;
-    text-align: center;
-    border-radius: 8px;
+    background: #ffffff;
+    /* White background */
+    color: #0023c4;
+    font-weight: bolder;
+    /* Deep blue text */
+    padding: 25px 20px;
+    text-align: left;
+    /* Left alignment */
+    border-radius: 12px;
+    /* Soft subtle shadow */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+    overflow: hidden;
+    border-bottom: solid 5px #273dff;
+    border-top: solid 5px #273dff;
+    /* Optional accent bar on the left */
 }
+
+.header h2 {
+    margin: 0;
+    font-size: 1.8em;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+    color: #0023c4;
+    /* Slightly darker for heading */
+}
+
+.header small {
+    display: block;
+    margin-top: 6px;
+    color: #313131;
+    opacity: 0.85;
+    position: relative;
+    z-index: 1;
+}
+
 
 .user-info {
     display: flex;
@@ -105,7 +136,7 @@ body {
 
 /* Device Box */
 .device-box {
-    padding: 20px;
+    padding: 10px;
     border-radius: var(--box-radius);
     margin-bottom: 15px;
     background-color: #f9f9f9;
@@ -176,12 +207,6 @@ body {
     height: 0;
 }
 
-#congsuat-slider {
-    width: 100%;
-    margin-top: 8px;
-    accent-color: var(--primary-color);
-}
-
 
 .slider {
     position: absolute;
@@ -226,7 +251,9 @@ input:checked+.slider:before {
 }
 
 .blue {
-    color: var(--accent-color);
+    margin-left: 10px;
+    font-weight: bold;
+    color: #001aff;
 }
 
 .gray {
@@ -239,7 +266,8 @@ input:checked+.slider:before {
 
 /* Slider Container */
 .slider-container {
-    margin-top: 10px;
+    margin: -10px 0px -7px 0px;
+    width: 100%;
 }
 
 /* Data Section */
@@ -299,6 +327,8 @@ canvas#data-chart {
     height: 250px;
     background-color: var(--bg-light);
     border-radius: 10px;
+    display: block;
+    max-height: 250px;
 }
 
 #data-list {
@@ -397,4 +427,192 @@ canvas#data-chart {
 
 .warning-zone.blinking {
     animation: blinkRed 0.3s infinite;
+}
+
+
+/* Slider */
+/* General slider style */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 12px;
+    /* Thicker track */
+    background: linear-gradient(to right, #2196f3, #90caf9);
+    /* Fancy gradient */
+    border-radius: 6px;
+    outline: none;
+    margin: 10px 0;
+    transition: background 0.3s ease-in-out;
+}
+
+/* Webkit browsers (Chrome, Safari) */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: #ffffff;
+    border: 2px solid #2196f3;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: #ffffff;
+    border: 3px solid #000000;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+/* Internet Explorer */
+input[type="range"]::-ms-thumb {
+    width: 22px;
+    height: 22px;
+    background: #ffffff;
+    border: 3px solid #000000;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Track styles for Firefox */
+input[type="range"]::-moz-range-track {
+    height: 20px;
+    background: linear-gradient(to right, #b5ddff, #001aff);
+    border-radius: 12px;
+}
+
+/* Track styles for IE */
+input[type="range"]::-ms-track {
+    height: 20px;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+
+input[type="range"]::-ms-fill-lower {
+    background: #2196f3;
+    border-radius: 6px;
+}
+
+input[type="range"]::-ms-fill-upper {
+    background: #90caf9;
+    border-radius: 6px;
+}
+
+.mode-toggle-group {
+    display: flex;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #f0f7ff;
+    width: 45%;
+    margin: 0 auto;
+    justify-content: center;
+    margin-bottom: 10px;
+    margin-top: -6px;
+}
+
+/* Individual toggle button styles */
+.mode-btn {
+    padding: 2px 6px 5px 6px;
+    border: none;
+    background-color: white;
+    color: black;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Segoe UI', sans-serif;
+    border-radius: 0px;
+    flex: 1;
+    font-size: 18px;
+}
+
+
+.mode-btn.active {
+    background-color: #0023c4;
+    color: white;
+}
+
+/* Media Query for smaller screens */
+@media (max-width: 600px) {
+    .mode-toggle-group {
+        width: 100%;
+    }
+
+    .mode-btn {
+        font-size: 14px;
+        /* Smaller buttons on mobile */
+    }
+}
+
+
+.nav-buttons {
+
+    width: fit-content;
+    margin: 10px auto;
+    height: 30px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding: 4px 20px 4px 20px;
+    border: none;
+    color: rgb(255, 255, 255);
+    font-weight: 600;
+    cursor: pointer;
+
+    font-family: 'Segoe UI', sans-serif;
+    border-radius: 20px;
+    font-size: 16px;
+    text-decoration: none;
+}
+
+.nav-buttons a {
+    text-decoration: none;
+    /* Remove underline */
+    color: white;
+    /* Change text color to white */
+    font-size: 16px;
+    /* Optional: Adjust font size */
+    padding: 10px 20px;
+    /* Optional: Add some padding to the button */
+    background-color: #0023c4;
+    /* Optional: Add a background color */
+    border-radius: 20px;
+    /* Optional: Add rounded corners */
+    transition: background-color 0.3s;
+    /* Optional: Add a smooth hover effect */
+}
+
+.nav-buttons a:hover {
+    background-color: #0079fa;
+}
+
+
+#logout-link {
+    text-decoration: none;
+    /* Remove underline */
+    color: red;
+    /* Set text color to red */
+    font-size: 16px;
+    /* Optional: Adjust font size */
+    font-weight: bold;
+    /* Optional: Make the text bold */
+    transition: color 0.3s;
+    /* Optional: Add a smooth hover effect */
+}
+
+#logout-link:hover {
+    color: darkred;
+    /* Change color to dark red on hover */
 }
