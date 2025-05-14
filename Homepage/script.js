@@ -563,11 +563,19 @@ async function updateAutoStatus() {
         // Turn on the light if it's off
         const ledRef = ref(db, 'led1');
         set(ledRef, "1");
+        const lastrgbRef = ref(db, "lastRgb");
+        const rgbRef = ref(db, "rgb");
+        get(lastrgbRef).then(snapshot => {
+            const lastColor = snapshot.val() || "#ffff00";
+            set(rgbRef, lastColor);
+        });
     } else {
         anhsangStatus.style.color = "#0023c4";
         // Turn off the light if it's on
         const ledRef = ref(db, 'led1');
         set(ledRef, "0");
+        const rgbRef = ref(db, "rgb");
+        set(rgbRef, "#000000");
     }
     if (tempValue > tempThreshold) {
         nhietdoStatus.style.color = "red";
