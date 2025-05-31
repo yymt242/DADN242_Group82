@@ -1,0 +1,97 @@
+% Encoding and Language
+\usepackage[utf8]{inputenc}       % UTF-8 encoding
+\usepackage[T5, T1]{fontenc}       % Font encoding for Western and Vietnamese characters
+\usepackage[varqu]{inconsolata}   % Monospaced font variant
+% \usepackage[vietnamese]{babel}    % Vietnamese language support
+\usepackage[utf8]{vietnam}        % Additional Vietnamese support
+\usepackage{anyfontsize}
+\usepackage{lmodern}              % Latin Modern font
+%\usepackage{vntex}              % Alternative Vietnamese package (commented)
+\usepackage{times}         % Times New Roman (hoặc fontspec nếu dùng XeLaTeX/LuaLaTeX)
+
+% Page Layout and Spacing
+% \usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=3cm,right=2cm,marginparwidth=0cm]{geometry}
+\usepackage[
+    a4paper,
+    top=2.5cm,
+    bottom=2.5cm,
+    inner=3cm,
+    outer=2cm,
+    headheight=1.2cm,
+    headsep=0.3cm,
+    footskip=1.2cm,
+    twoside,
+    marginparwidth=0cm
+]{geometry}
+\usepackage{setspace}             % Line spacing control
+\usepackage{titlesec}      % để chỉnh định dạng tiêu đề
+\usepackage{ragged2e}
+
+% Fonts and Typography
+
+\usepackage{fix-cm}               % Font size fixes
+\usepackage{relsize}              % Relative font size changes
+
+% Mathematics and Symbols
+\usepackage{amsmath,amssymb,amsfonts,latexsym,mathtools,mathdots,bbm,amsthm,amscd}
+\usepackage{cases}                % Numbered cases environment
+\usepackage{esvect}               % Vector notation
+\usepackage{commath}              % Additional math commands
+\usepackage[makeroom]{cancel}     % Cancel symbols (crossing out)
+\usepackage{wasysym}              % Miscellaneous symbols
+
+% Tables and Arrays
+\usepackage{array,multirow,tabularx,longtable,multicol} % Enhanced tables
+\usepackage{ltablex}             % Long tables with X columns
+\usepackage{booktabs}             % Professional quality tables
+\usepackage{hhline}               % Advanced horizontal lines
+\usepackage{diagbox}              % Diagonal cell in tables
+\usepackage[justification=centering]{caption} % Caption formatting
+\usepackage{subcaption}           % Sub-captions for figures and tables
+
+% Graphics and Figures
+\usepackage{graphicx,epsfig,rotating,pstricks,tikz,graphics}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,decorations.pathreplacing,backgrounds,calc,positioning,shapes.geometric}
+\graphicspath{{figures/}}
+\usepackage{float}                % Improved floating environments
+
+% Algorithms
+\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+
+% Lists and Enumerations
+\usepackage{enumitem}             % Customizable lists
+
+% Code and Verbatim
+\usepackage{listings}             % Code listings
+\usepackage{xcolor}               % Color support
+\usepackage{alltt}                % Verbatim with formatting
+
+% Framed Boxes
+\usepackage{tcolorbox}            % Colored and framed boxes
+\usepackage{framed}               % Simple framed environment
+\usepackage[framemethod=tikz]{mdframed} % Framed boxes using TikZ
+
+% Headers and Footers
+\usepackage{fancyhdr}             % Custom headers/footers
+\usepackage{lastpage}             % Reference to last page number
+\usepackage{indentfirst}          % Indent first paragraph after section heading
+
+% Hyperlinks (set once)
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue,
+    pdftitle={\docTitle},
+    pdfauthor={\docAuthor}
+}
+
+\usepackage{gensymb}
+% \usepackage{minitoc} % Not compatible with titlesec
+\usepackage{xurl}
+\usepackage{tocloft}
+\usepackage{etoolbox}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18} % Set compatibility version for pgfplots

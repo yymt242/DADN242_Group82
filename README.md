@@ -1,51 +1,24 @@
 # Thực tập Đồ án môn học Đa ngành (CO3109)
 
-> *Đề tài: Hệ thống báo động an toàn cho gia đình*
+Đề tài: HỆ THỐNG BÁO ĐỘNG AN TOÀN CHO GIA ĐÌNH
 
-# Trang web điều khiển (GitHub Pages)
+Học kỳ 242, Năm học 2024-2025
 
-Trang web điều khiển được host tại: https://yymt242.github.io/DADN242_Group82/
 
-- Cập nhật dữ liệu mỗi 100ms
 
-# Sơ đồ chân cắm của Yolobit
+Repository này bao gồm
 
-Dùng trình duyệt Google Chrome > Lập trình cho Yolobit tại trang web: https://app.ohstem.vn/
+- Mã nguồn cho Web App điều khiển
+- Mã nguồn LaTeX và báo cáo môn học
 
-Cập nhật firmware?
 
-Nạp chương trình?
 
-Reset: Nhấn nút A 3s > nhấn nút Reset 1s (vẫn giữ nút A) > Thả nút A
+Các thành viên nhóm:
 
-Sensors:
-
-- Khoảng cách: P3 - P6
-- Ánh sáng: P0
-- Nhiệt độ độ ẩm (DHT20): I2C 1
-
-Actuators:
-
-- LED RGB: P14
-- Quạt: P10
-- (Servo): P4
-
-# Chạy chương trình Python trên Gateway (Windows)
-
-Trên Terminal, gõ:
-
-```
-python.exe -m pip install --upgrade pip
-pip install requests pyserial
-py .\gateway.py
-```
-
-Để tắt, nhấn `Ctrl + C`
-
-# Các link khác
-
-Report: https://www.overleaf.com/6529685965qyvngzjdgjsr#db6805
-
-Diagrams: https://lucid.app/lucidchart/064364e0-1b27-408e-a416-a571333ab81b/edit?page=V7DcAqmfEmd2&invitationId=inv_0a23d03d-6f0f-4931-92a2-9a6e7cb79dc9#
-
-UI design: https://www.figma.com/design/hNTIOmVgMMizfo88M6MIWd/DADN242_Group82?node-id=0-1&p=f&t=LQgXJ75DQEMyXQeQ-0 
+| Mã SV   | Họ           | Tên   | Lớp      | Nhóm | Mail                              | Ngày sinh  | Hệ   |
+| ------- | ------------ | ----- | -------- | ---- | --------------------------------- | ---------- | ---- |
+| 2153005 | Trương Minh  | Thông | BT21KHM  | L01  | thong.truongminh@hcmut.edu.vn     | 10/10/2003 | VLVH |
+| 2233163 | Nguyễn Anh   | Duy   | BT22KHL2 | L02  | duy.nguyen050298@hcmut.edu.vn     | 05/02/1998 | VLVH |
+| 2012938 | Nguyễn Thành | Đạt   | BT20KT06 | L02  | dat.nguyendattflorie@hcmut.edu.vn | 31/10/2002 | VLVH |
+| 2212588 | Nguyễn Ngọc  | Phú   | MT22KT03 | L02  | phu.nguyen2212588@hcmut.edu.vn    | 30/08/2004 | CQ   |
+| 2151217 | Nguyễn Viết  | Ký    | BT21KHM  | L03  | ky.nguyenviet@hcmut.edu.vn        | 14/07/2003 | VLVH |
