@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <title>Hệ thống báo động an toàn cho gia đình</title>
+  <link href="https://fonts.googleapis.com/css?family=Karla:400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.8.95/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/login.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+  <main>
+    <div class="login-container">
+      <div class="background-image"></div>
+      <div class="form-overlay">
+        <h1 class="login-title" id="form-title">Đăng nhập</h1>
+
+        <form id="login-form" onsubmit="checkAccount(event)">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" class="form-control" placeholder="Email" />
+          </div>
+          <div class="form-group">
+            <label for="password">Mật khẩu</label>
+            <input type="password" name="password" id="password" class="form-control" placeholder="Mật khẩu" />
+          </div>
+          <input name="login" id="login-btn" class="btn login-btn" type="submit" value="Đăng nhập"
+            onclick="checkAccount()" />
+          <a href="#" class="forgot-password-link" id="forgot-password">Quên mật khẩu?</a>
+
+          <!--
+          <p class="login-wrapper-footer-text">
+            Chưa có tài khoản?
+            <a href="#" id="switch-to-register" class="link2">Đăng ký tại đây</a>
+          </p>
+          -->
+        </form>
+
+        <form id="register-form" style="display: none;" onsubmit="registerAccount(event)">
+          <div class="form-group">
+            <label for="reg-email">Email</label>
+            <input type="email" name="reg-email" id="reg-email" class="form-control" placeholder="Email" />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Mật khẩu</label>
+            <input type="password" name="reg-password" id="reg-password" class="form-control" placeholder="Mật khẩu" />
+          </div>
+          <div class="form-group">
+            <label for="reg-confirm-password">Xác nhận mật khẩu</label>
+            <input type="password" name="reg-confirm-password" id="reg-confirm-password" class="form-control"
+              placeholder="Xác nhận mật khẩu" />
+          </div>
+          <div class="form-group">
+            <label for="reg-name">Tên tài khoản</label>
+            <input type="text" name="reg-name" id="reg-name" class="form-control" placeholder="Tên tài khoản" />
+          </div>
+          <div class="form-group">
+            <label for="reg-phone">Số điện thoại</label>
+            <input type="text" name="reg-phone" id="reg-phone" class="form-control" placeholder="Số điện thoại" />
+          </div>
+          <div class="form-group">
+            <label for="reg-profile-pic">Ảnh đại diện</label>
+            <input type="text" name="reg-profile-pic" id="reg-profile-pic" class="form-control"
+              placeholder="URL ảnh đại diện" />
+          </div>
+          <div class="form-group">
+            <label for="reg-role">Vai trò</label>
+            <select name="reg-role" id="reg-role" class="form-control">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <input name="register" id="register-btn" class="btn login-btn" type="submit" value="Đăng ký"
+            onclick="registerAccount()" />
+          <p class="login-wrapper-footer-text">
+            Đã có tài khoản?
+            <a href="#" id="switch-to-login" class="link2">Đăng nhập tại đây</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </main>
+
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <script type="module">
+    /* Firebase configuration and initialization */
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+    import { getDatabase, ref, get, set, onValue, off } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
+    import { getAuth, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCLE7kFEQc7ZIC9kgtY70auZ14NoLoltxQ",
+      authDomain: "dadn242group82.firebaseapp.com",
+      projectId: "dadn242group82",
+      storageBucket: "dadn242group82.firebasestorage.app",
+      messagingSenderId: "462160967009",
+      appId: "1:462160967009:web:813fae07b129707bb4c120",
+      measurementId: "G-V4M7Q5KX56",
+      databaseURL: "https://dadn242group82-default-rtdb.asia-southeast1.firebasedatabase.app/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+    const analytics = getAnalytics(app);
+
+    window.firebase = {
+      db,
+      ref,
+      get,
+      set,
+      onValue,
+      off,
+      auth,
+      signOut,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      analytics
+    };
+
+    // Login function
+    window.checkAccount = function (event) {
+      event.preventDefault(); // Prevent form from refreshing the page
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          localStorage.setItem('userEmail', userCredential.user.email);
+          window.location.href = "../Homepage/index.html";
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Đăng nhập thất bại',
+            text: error.message
+          });
+        });
+    };
+
+    // Register function
+    window.registerAccount = function (event) {
+      event.preventDefault();
+
+      const email = document.getElementById("reg-email").value;
+      const password = document.getElementById("reg-password").value;
+      const confirmPassword = document.getElementById("reg-confirm-password").value;
+
+      if (password !== confirmPassword) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Mật khẩu không khớp',
+          text: 'Vui lòng kiểm tra lại.'
+        });
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Đăng ký thành công',
+          });
+          document.getElementById("register-form").reset();
+          $('#register-form').hide();
+          $('#login-form').show();
+          $('#form-title').text('Đăng nhập');
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Đăng ký không thành công',
+            text: error.message
+          });
+        });
+    };
+
+    // Forgot password functionality
+    document.getElementById("forgot-password").addEventListener("click", function () {
+      Swal.fire({
+        title: 'Đặt lại mật khẩu',
+        input: 'email',
+        inputLabel: 'Nhập email của bạn để đặt lại mật khẩu',
+        inputPlaceholder: 'email@example.com',
+        showCancelButton: true,
+        confirmButtonText: 'Gửi',
+        cancelButtonText: 'Hủy'
+      }).then((result) => {
+        if (result.isConfirmed && result.value) {
+          import("https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js").then(({ getAuth, sendPasswordResetEmail }) => {
+            const auth = getAuth();
+            sendPasswordResetEmail(auth, result.value)
+              .then(() => {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Thành công',
+                  text: 'Đã gửi email đặt lại mật khẩu.'
+                });
+              })
+              .catch((error) => {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Lỗi',
+                  text: error.message
+                });
+              });
+          });
+        }
+      });
+    });
+  </script>
+  <script>
+    $(document).ready(function () {
+      $('#switch-to-register').click(function () {
+        $('#login-form').hide();
+        $('#register-form').show();
+        $('#form-title').text('Đăng ký');
+      });
+
+      $('#switch-to-login').click(function () {
+        $('#register-form').hide();
+        $('#login-form').show();
+        $('#form-title').text('Đăng nhập');
+      });
+    });
+  </script>
+
+</body>
+
+</html>

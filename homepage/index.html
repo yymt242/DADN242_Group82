@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống báo động an toàn cho gia đình</title>
+
+    <link rel="icon" type="image/x-icon" href="imageres_78.ico">
+    <link rel="stylesheet" href="style.css">
+
+    <script type="module" src="./script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+</head>
+
+<body>
+    <!-- Header section -->
+
+    <div class="header">
+        <div class="user-info">
+            <div class="profile-section">
+                <img src="path-to-profile.jpg" alt="Profile Picture" class="profile-pic">
+                <div class="user-details">
+                    <div class="greeting">Xin chào,</div>
+                    <span id="user-email" style="color: white;">user@example.com</span>
+                </div>
+            </div>
+            <a href="#" id="logout-link">Đăng xuất</a>
+        </div>
+
+        <small>Nhóm 82 - Đồ án đa ngành HK242</small>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                function updateDateTime() {
+                    const weekdays = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+                    const now = new Date();
+                    const weekday = weekdays[now.getDay()];
+                    const dateStr = now.toLocaleDateString('vi-VN');
+                    const hour = now.getHours().toString().padStart(2, '0');
+                    const minute = now.getMinutes().toString().padStart(2, '0');
+                    document.getElementById('current-date').textContent = `${hour}:${minute} - ${weekday}, Ngày ${dateStr}`;
+                }
+                updateDateTime();
+                setInterval(updateDateTime, 1000);
+            });
+        </script>
+        <h2>Hệ thống báo động <br> an toàn cho gia đình</h2>
+        <div class="date-info">
+            <span id="current-date"></span>
+        </div>
+
+        <div class="warning-zone">
+            <span id="warning-status">Loading...</span>
+            <img id="intruder-status-icon" src="" alt="Loading icon..." style="width: 50px; height: 50px;">
+        </div>
+    </div>
+
+
+    <main>
+
+        <div class="section" id="home-section">
+            <div class="section-title">Thông số cảm biến</div>
+
+            <div class="env-grid">
+                <div class="env-box">
+                    <span>Ánh sáng</span>
+                    <div class="value-wrapper">
+                        <span id="anhsang-status">Loading...</span> lm
+                    </div>
+                    <div class="progress-container">
+                        <div id="anhsang-bar" class="progress-bar"></div>
+                    </div>
+                </div>
+                <div class="env-box">
+                    <span>Khoảng cách</span>
+                    <div class="value-wrapper">
+                        <span id="khoangcach-status">Loading...</span> cm
+                    </div>
+                    <div class="progress-container">
+                        <div id="khoangcach-bar" class="progress-bar"></div>
+                    </div>
+                </div>
+                <div class="env-box">
+                    <span>Nhiệt độ</span>
+                    <div class="value-wrapper">
+                        <span id="nhietdo-status">Loading...</span> °C
+                    </div>
+                    <div class="progress-container">
+                        <div id="nhietdo-bar" class="progress-bar"></div>
+                    </div>
+                </div>
+                <div class="env-box">
+                    <span>Độ ẩm</span>
+                    <div class="value-wrapper">
+                        <span id="doam-status">Loading...</span> %
+                    </div>
+                    <div class="progress-container">
+                        <div id="doam-bar" class="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="section" id="control-section">
+            <div class="section-title">Điều khiển thiết bị</div>
+            <div class="mode-toggle-group">
+                <button id="manual-btn" class="mode-btn active">Thủ công</button>
+                <button id="auto-btn" class="mode-btn">Tự động</button>
+            </div>
+
+            <div class="manual-mode">
+                <div class="device-box">
+                    <div class="device-row">
+                        <strong>Quạt</strong>
+                        <div class="status-group">
+                            <span class="status gray" id="quat-status">Loading...</span>
+
+                            <label class="switch">
+                                <input type="checkbox" data-feed="quat">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="slider-container">
+                        Công suất: <span id="congsuat-value" class="blue">Loading</span>
+                        <input type="range" min="10" max="90" value="70" id="congsuat-slider">
+                    </div>
+                </div>
+
+
+                <div class="device-box">
+                    <div class="device-row">
+                        <strong>Đèn</strong>
+                        <div class="status-group">
+                            <span class="status gray" id="led1-status">Loading...</span>
+                            <label class="switch">
+                                <input type="checkbox" data-feed="led1">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="device-sub" style="margin-top: -45px">
+                        Màu sắc
+                        <input type="color" id="led1-color-picker" value="#ffff00">
+                    </div>
+                </div>
+
+
+                <div class="device-box">
+                    <div class="device-row">
+                        <strong>Cửa</strong>
+                        <div class="status-group">
+                            <span class="status gray" id="door-status">Loading...</span>
+
+                            <label class="switch">
+                                <input type="checkbox" data-feed="door">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auto-mode">
+
+                <div class="device-box">
+                    <div class="device-row">
+                        <strong>Ngưỡng nhiệt độ để bật quạt</strong>
+                        <div class="status-group">
+                            <span class="status gray" id="temp-threshold-status">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="slider-container">
+                        Nhiệt độ trên mức: <span id="temp-threshold-value" class="blue">Loading</span>
+                        <input type="range" min="1" max="100" value="27" id="temp-threshold-slider">
+                    </div>
+                </div>
+
+
+                <div class="device-box">
+                    <div class="device-row">
+                        <strong>Ngưỡng ánh sáng để bật đèn</strong>
+                        <div class="status-group">
+                            <span class="status gray" id="light-threshold-status">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="slider-container">
+                        Ánh sáng dưới mức: <span id="light-threshold-value" class="blue">Loading</span>
+                        <input type="range" min="1" max="1000" value="400" id="light-threshold-slider">
+                    </div>
+                </div>
+
+
+                <div class="device-box">
+                    <div class="device-row">
+                        <strong>Ngưỡng khoảng cách để báo động</strong>
+                        <div class="status-group">
+                            <span class="status gray" id="distance-threshold-status">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="slider-container">
+                        Khoảng cách dưới mức: <span id="distance-threshold-value" class="blue">Loading</span>
+                        <input type="range" min="1" max="199" value="50" id="distance-threshold-slider">
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Data section -->
+        <div class="section" id="chart-section">
+            <div class="section-title">Lịch sử dữ liệu</div>
+            <div class="data-section">
+                <div class="data-header">
+                    <!-- Hidden select to retain value -->
+                    <select id="feed-selector" style="display: none;">
+                        <option value="anhsang">Ánh sáng</option>
+                        <option value="doam">Độ ẩm</option>
+                        <option value="khoangcach">Khoảng cách</option>
+                        <option value="nhietdo">Nhiệt độ</option>
+                        <option value="quat">Quạt</option>
+                        <option value="led1">Đèn</option>
+                        <option value="door">Cửa</option>
+                    </select>
+
+                    <!-- Horizontal button list -->
+                    <div class="feed-button-list">
+                        <button class="feed-btn" data-value="anhsang">Ánh sáng</button>
+                        <button class="feed-btn" data-value="doam">Độ ẩm</button>
+                        <button class="feed-btn" data-value="khoangcach">Khoảng cách</button>
+                        <button class="feed-btn" data-value="nhietdo">Nhiệt độ</button>
+                        <button class="feed-btn" data-value="quat">Quạt</button>
+                        <button class="feed-btn" data-value="led1">Đèn</button>
+                        <button class="feed-btn" data-value="door">Cửa</button>
+                    </div>
+                </div>
+
+                <style>
+                    .feed-button-list {
+                        display: flex;
+                        overflow-x: auto;
+                        gap: 10px;
+                        scrollbar-width: none;
+                        /* Firefox */
+                        -ms-overflow-style: none;
+                        /* IE and Edge */
+                        margin-bottom: 10px;
+                    }
+
+                    .feed-button-list::-webkit-scrollbar {
+                        display: none;
+                        /* Chrome, Safari, Opera */
+
+
+                    }
+
+
+
+                    .feed-btn {
+                        flex: 0 0 auto;
+                        padding: 8px 16px;
+                        border: 1px solid #ccc;
+                        background-color: white;
+                        border-radius: 10px;
+                        cursor: pointer;
+                        white-space: nowrap;
+                        transition: background-color 0.2s, color 0.2s;
+                    }
+
+                    .feed-btn.active {
+                        background-color: #0023c4;
+                        color: white;
+                        border-color: #0023c4;
+                        font-weight: 600;
+                    }
+
+                    .feed-btn:hover {
+                        background-color: yellow;
+                    }
+                </style>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const feedSelector = document.getElementById("feed-selector");
+                        const buttons = document.querySelectorAll(".feed-btn");
+
+                        buttons.forEach(button => {
+                            button.addEventListener("click", () => {
+                                // Remove active class from all
+                                buttons.forEach(btn => btn.classList.remove("active"));
+
+                                // Add active class to clicked one
+                                button.classList.add("active");
+
+                                // Set value on hidden select
+                                feedSelector.value = button.dataset.value;
+
+                                // Optional: trigger change event
+                                const event = new Event('change');
+                                feedSelector.dispatchEvent(event);
+                            });
+                        });
+
+                        // Initialize: activate the first one by default
+                        if (buttons.length > 0) {
+                            buttons[0].classList.add("active");
+                            feedSelector.value = buttons[0].dataset.value;
+                        }
+                    });
+                </script>
+
+
+                <canvas id="data-chart" style="width: 100%;"></canvas>
+
+                <div class="chart-buttons" id="time-range-buttons">
+                    <button data-range="1m" class="active">1 phút</button>
+                    <button data-range="5m">5 phút</button>
+                    <button data-range="1h">1 giờ</button>
+                    <button data-range="5h">5 giờ</button>
+                    <button data-range="1d">1 ngày</button>
+                    <button data-range="1w">1 tuần</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account section -->
+        <div class="section" id="account-section">
+            <div class="section-title">Cài đặt tài khoản</div>
+
+            <form id="update-info-form" onsubmit="saveInfo(event)" style="display: block;">
+                <!-- Display-only Information -->
+                <div class="form-group">
+                    <label style="display:inline;">Vai trò:</label>
+                    <span id="user-role" class="info-value">user role</span>
+                </div>
+
+                <div class="form-group">
+                    <label style="display:inline;">Email:</label>
+                    <span id="user-email" class="info-value">user email</span>
+                </div>
+
+                <!-- Editable Information -->
+                <div class="form-group">
+                    <label for="current-password">Mật khẩu hiện tại</label>
+                    <input type="password" id="current-password" name="current-password" class="form-control"
+                        placeholder="Nhập mật khẩu hiện tại" />
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Xác nhận mật khẩu</label>
+                    <input type="password" id="confirm-password" name="confirm-password" class="form-control"
+                        placeholder="Xác nhận mật khẩu" />
+                </div>
+
+                <div class="form-group">
+                    <label for="new-name">Tên tài khoản mới</label>
+                    <input type="text" id="new-name" name="new-name" class="form-control"
+                        placeholder="Nhập tên tài khoản mới" />
+                    <small>Tên hiện tại: <strong id="current-name">user name</strong></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="new-phone">Số điện thoại mới</label>
+                    <input type="text" id="new-phone" name="new-phone" class="form-control"
+                        placeholder="Nhập số điện thoại mới" />
+                    <small>Số hiện tại: <strong id="current-phone">user phone number</strong></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Ảnh đại diện hiện tại</label>
+                    <div>
+                        <img id="current-profile-pic" src="" alt="Ảnh đại diện hiện tại"
+                            style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="profile-pic">Cập nhật ảnh đại diện</label>
+                    <input type="file" id="profile-pic" name="profile-pic" class="form-control" accept="image/*" />
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="account-buttons">
+                    <button type="submit" class="btn login-btn" style="background-color: #0023c4;">Cập nhật thông
+                        tin</button>
+                    <button type="button" class="btn login-btn" onclick="deleteAccount()"
+                        style="background-color: #d40000;">Xóa tài khoản</button>
+                </div>
+            </form>
+        </div>
+
+    </main>
+    <!-- TAB SECTION FOR MOBILE DEVICE -->
+    <div class="mobile-tabs">
+        <a href="#home-section" class="tab-item active">
+            <img src="./icon/home.svg" alt="Home">
+            <span>Môi trường</span>
+        </a>
+        <a href="#device-section" class="tab-item">
+            <img src="./icon/control.svg" alt="Control">
+            <span>Điều khiển</span>
+        </a>
+        <a href="#data-section" class="tab-item">
+            <img src="./icon/chart.svg" alt="Chart">
+            <span>Lịch sử dữ liệu </span>
+        </a>
+        <a href="#account-section" class="tab-item">
+            <img src="./icon/account.svg" alt="Account">
+            <span>Tài khoản</span>
+        </a>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabItems = document.querySelectorAll('.tab-item');
+            const sections = {
+                'Môi trường': 'home-section',
+                'Điều khiển': 'control-section',
+                'Lịch sử dữ liệu': 'chart-section',
+                'Tài khoản': 'account-section',
+            };
+
+            function setActiveTab(clickedTab) {
+                // Toggle active class on tabs
+                tabItems.forEach(tab => tab.classList.remove('active'));
+                clickedTab.classList.add('active');
+
+                // Switch all icons to default version
+                tabItems.forEach(tab => {
+                    const img = tab.querySelector('img');
+                    const alt = img.alt;
+                    img.src = `./icon/${alt.toLowerCase()}.svg`;
+                });
+
+                // Switch active icon to _selected version
+                const activeImg = clickedTab.querySelector('img');
+                const activeAlt = activeImg.alt;
+                activeImg.src = `./icon/${activeAlt.toLowerCase()}_selected.svg`;
+
+                // Determine which section to show
+                const tabText = clickedTab.querySelector('span').innerText.trim();
+                const targetId = sections[tabText];
+
+                if (targetId) {
+                    // Hide all sections
+                    document.querySelectorAll('.section').forEach(section => {
+                        section.classList.remove('active');
+                        section.style.display = 'none';
+                    });
+
+                    // Show the target section
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.classList.add('active');
+                        targetSection.style.display = 'block';
+                    }
+                }
+            }
+
+            // Initial load
+            const defaultTab = document.querySelector('.tab-item.active');
+            if (defaultTab) setActiveTab(defaultTab);
+
+            // Tab click listeners
+            tabItems.forEach(tab => {
+                tab.addEventListener('click', function (e) {
+                    e.preventDefault(); // Prevent anchor default behavior
+                    setActiveTab(this);
+                });
+            });
+        });
+
+    </script>
+
+</body>
+
+</html>
