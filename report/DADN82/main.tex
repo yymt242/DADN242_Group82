@@ -1,0 +1,58 @@
+\documentclass[a4paper]{article}
+
+\newcommand{\docTitle}{HỆ THỐNG BÁO ĐỘNG AN TOÀN CHO GIA ĐÌNH} % Luôn luôn in hoa
+\newcommand{\docAuthor}{Nguyễn Văn A}
+\newcommand{\docDate}{ngày 1 tháng 5 năm 2025}
+\title{\docTitle}
+\author{\docAuthor}
+\date{\docDate}
+%\maketitle
+
+% Preamble
+\input{preamble/packages.tex}
+\input{preamble/macros.tex}
+\input{preamble/style.sty}
+
+\begin{document}
+
+% Front matter
+\input{cover_pages/cover02.tex}       \clearpage
+
+\input{cover_pages/acknowledgements.tex} \clearpage
+\input{cover_pages/abstract.tex}      \clearpage
+\input{cover_pages/nomenclature.tex}  \clearpage
+\input{cover_pages/symbols.tex}       \clearpage
+\input{cover_pages/abbreviations.tex} \clearpage
+\input{cover_pages/figures.tex}       \clearpage
+\input{cover_pages/tables.tex}        \clearpage
+\input{cover_pages/algorithms.tex}    \clearpage
+\input{cover_pages/code_listings.tex} \clearpage
+\input{cover_pages/appendices.tex}    \clearpage
+
+
+
+% TOC and Lists
+\pagestyle{empty}          % no header/footer on all pages here
+\cleardoublepage
+\pagenumbering{gobble}     % suppress page numbers
+\section*{MỤC LỤC}
+\tableofcontents
+\listoffigures
+\listoftables
+
+
+% Main content
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\setcounter{page}{1} % reset page numbering
+\input{chapters/1 gioithieu.tex}
+\input{chapters/2 thietke.tex}
+\input{chapters/4 usecase.tex}
+\input{chapters/5 mockups.tex}
+\input{chapters/9 ketluan.tex}
+
+% Bibliography
+\input{bibliography/bibliography.tex}
+
+\end{document}

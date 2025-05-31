@@ -1,0 +1,130 @@
+\newpage
+\section{GIỚI THIỆU ĐỀ TÀI}
+
+\subsection{Hệ thống báo động an toàn cho gia đình}
+
+\textbf{Hệ thống nhà thông minh (SmartHome)} có lẽ là từ khóa quá quen thuộc với mọi người trong cuộc sống hiện đại ngày nay. Nhà thông minh (Smart Home) là một hệ thống tích hợp các thiết bị điện tử và công nghệ tiên tiến nhằm tạo ra một môi trường sống tiện nghi, an toàn và tiết kiệm năng lượng. Các thiết bị trong nhà thông minh có thể bao gồm đèn chiếu sáng, điều hòa nhiệt độ, hệ thống an ninh, và các thiết bị gia dụng khác, tất cả đều được kết nối và điều khiển thông qua mạng internet. Nhờ vào công nghệ Internet of Things (IoT), các thiết bị này có thể giao tiếp với nhau và với người dùng, cho phép điều khiển từ xa và tự động hóa các hoạt động hàng ngày. Hệ thống nhà thông minh không chỉ mang lại sự tiện lợi mà còn giúp tối ưu hóa việc sử dụng năng lượng, nâng cao mức độ an toàn và cải thiện chất lượng cuộc sống.
+
+Trong đồ án đa ngành này, nhóm chúng em sẽ thực hiện một hệ thống báo động an toàn cho gia đình (một mô hình SmartHome đơn giản) được thiết kế để giám sát môi trường trong nhà và cảnh báo khi phát hiện các tình huống nguy hiểm. Hệ thống sử dụng vi điều khiển Yolo:Bit cùng với các cảm biến để theo dõi nhiệt độ, độ ẩm, ánh sáng và chuyển động. Khi phát hiện nguy cơ, hệ thống sẽ kích hoạt cảnh báo bằng đèn LED RGB, hiển thị thông tin trên màn hình LCD và có thể gửi cảnh báo đến người dùng thông qua trang web trên thiết bị điện tử.
+
+\textbf{\textit{Mục tiêu của đề tài:}}
+\begin{itemize}
+    \item Giám sát và phát hiện các yếu tố môi trường trong nhà như nhiệt độ, độ ẩm, ánh sáng, chuyển động.
+    \item Đưa ra cảnh báo kịp thời khi có nguy cơ xảy ra cháy nổ, xâm nhập hoặc điều kiện môi trường bất thường.
+    \item Tạo giao diện điều khiển trực quan trên màn hình LCD và nền tảng web để người dùng có thể dễ dàng giám sát và điều khiển hệ thống từ xa.
+    \item Cung cấp khả năng mở rộng, nâng cấp để tích hợp thêm các cảm biến và thiết bị điều khiển khác.
+\end{itemize}
+
+
+\textbf{\textit{Phạm vi đề tài:}}
+\begin{itemize}
+    \item Ứng dụng trong các hộ gia đình, căn hộ nhỏ hoặc văn phòng có quy mô nhỏ.
+    \item Hỗ trợ các thiết bị điều khiển cơ bản như đèn LED RGB, quạt mini, màn hình LCD.
+    \item Kết nối qua giao tiếp không dây để hỗ trợ điều khiển từ xa thông qua remote hoặc nền tảng web.
+    \item Không tích hợp chức năng giám sát hình ảnh qua camera hoặc hệ thống bảo mật chuyên sâu như khóa vân tay hoặc mã số.
+\end{itemize}
+
+
+\textbf{\textit{Các yêu cầu chung của hệ thống:}}
+\begin{itemize}
+    \item \textbf{Giám sát nhiệt độ và độ ẩm}
+          \begin{itemize}
+              \item Đọc dữ liệu từ cảm biến DHT20.
+              \item Hiển thị thông tin lên màn hình LCD 16x2.
+              \item Tự động kích hoạt quạt mini khi nhiệt độ vượt quá ngưỡng cài đặt.
+          \end{itemize}
+    \item \textbf{Phát hiện chuyển động và khoảng cách}
+          \begin{itemize}
+              \item Sử dụng cảm biến hồng ngoại để phát hiện người hoặc vật thể di chuyển trong phạm vi giám sát.
+              \item Khi phát hiện xâm nhập, hệ thống sẽ kích hoạt báo động bằng đèn LED RGB và hiển thị cảnh báo trên màn hình LCD.
+          \end{itemize}
+    \item \textbf{Cảm biến ánh sáng}
+          \begin{itemize}
+              \item Đo mức độ ánh sáng trong phòng.
+              \item Tự động bật/tắt đèn LED RGB khi trời tối/sáng.
+          \end{itemize}
+    \item \textbf{Điều khiển từ xa}
+          \begin{itemize}
+              \item Sử dụng remote để bật/tắt quạt, đèn LED RGB.
+              \item Cấu hình lại hệ thống bằng điều khiển từ xa.
+              \item Hệ thống hỗ trợ một trang web dashboard để điều khiển thiết bị từ xa thông qua Internet.
+          \end{itemize}
+    \item \textbf{Thông báo cảnh báo}
+          \begin{itemize}
+              \item Khi phát hiện nguy hiểm như nhiệt độ cao hoặc có người lạ xâm nhập, hệ thống sẽ kích hoạt cảnh báo nhấp nháy bằng đèn LED RGB.
+              \item Hiển thị thông tin cảnh báo lên màn hình LCD.
+              \item Báo cáo và ghi nhận các sự kiện xảy ra trong hệ thống.
+          \end{itemize}
+\end{itemize}
+
+\subsection{Yêu cầu của hệ thống}
+\subsubsection{Yêu cầu chức năng}
+\begin{itemize}
+    \item Hệ thống phải có khả năng thu thập dữ liệu từ các cảm biến và xử lý thông tin trong thời gian thực.
+    \item Khi phát hiện tình huống nguy hiểm, hệ thống cần kích hoạt cảnh báo ngay lập tức.
+    \item Giao diện điều khiển trên web phải có khả năng hiển thị dữ liệu và điều khiển thiết bị từ xa.
+    \item Điều khiển quạt, đèn LED RGB từ xa thông qua trang web.
+    \item Ghi nhận và lưu trữ lịch sử cảnh báo để người dùng có thể truy xuất khi cần thiết.
+\end{itemize}
+Quản lý lớp học
+
+- Room info
+- Auto On/Off
+- Room sign up
+
+- Dùng microphone điều hiển thiết bị
+- user profile management
+- API điều khiển thiết bị
+
+Đặt lịch sử dụng phòng học
+
+- Nhắc nhở lich học
+- Quản lý lịch sử dụng (app đt)
+
+Điều khiển thiết bị (voice/ 1 chạm)
+
+- Theo dõi nhiệt độ, độ ẩm, ánh sáng (dashboard)
+- tự động/ tắt
+- báo khi có sự cố thiết bị
+- xem danh sách điểm danh
+
+Điểm danh, quản lý học sinh (AI vision - số lượng ng trong phòng)
+
+\subsubsection{Yêu cầu phi chức năng}
+Đo được
+\begin{itemize}
+    \item \textbf{Độ chính xác}: Cảm biến nhiệt độ có độ chính xác ±2\% và cảm biến độ ẩm có độ chính xác ±5\%.
+    \item \textbf{Thời gian phản hồi}: Hệ thống phải phản hồi trong vòng 1 giây sau khi nhận tín hiệu từ cảm biến hoặc remote. (Real time)
+    \item \textbf{Độ bền}: Thiết bị phải hoạt động ổn định trong dải nhiệt độ từ 0\degree C đến 50\degree C.
+    \item \textbf{Tiêu thụ điện năng}: Hệ thống sử dụng nguồn 5V, tối ưu để tiết kiệm năng lượng.
+    \item \textbf{Dễ sử dụng}: Giao diện người dùng hiển thị rõ ràng, các nút điều khiển đơn giản, dễ thao tác, UI đẹp, dễ dùng
+    \item \textbf{Khả năng mở rộng}: Hệ thống có thể dễ dàng tích hợp thêm các cảm biến và thiết bị điều khiển khác.
+\end{itemize}
+- Khả dụng: dễ sử dụng, học dùng trong 10 phút, dùng trên tất cả web browser
+- Bảo mật: mã hóa mật khẩu, data, nhập pass để xem thông tin
+- Có sẵn: hoạt động bất kỳ lúc nào 24/7, không được off quá 60p
+- Hiệu suất: xử lý thời gian thự, nhanh, chính xác
+- Mở rộng: có khả năng mở rộng
+- Tin cậy: dự liệu thu được đảm bảo tin cậy
+- Bảo trì dễ: bảo trị theo tháng
+
+\subsection{Phân công nhiệm vụ trong nhóm}
+
+
+\begin{longtable}{|p{0.1\textwidth}|p{0.3\textwidth}|p{0.2\textwidth}|p{0.4\textwidth}|}
+    \hline
+    \textbf{STT} & \textbf{Sinh viên thực hiện} & \textbf{Mã số sinh viên} & \textbf{Nhiệm vụ}     \\
+    \hline
+    1            & Nguyễn Anh Duy               & 2233163                  & Front-End cho Web App \\
+    \hline
+    2            & Nguyễn Thành Đạt             & 2012938                  & Code cho mạch YoloBit \\
+    \hline
+    3            & Nguyễn Ngọc Phú              & 2212588                  & Code IoT Gateway      \\
+    \hline
+    4            & Trương Minh Thông            & 2153005                  & Viết báo cáo \LaTeX   \\
+    \hline
+    5            & Nguyễn Viết Ký               & 2151217                  & Back-End cho Web App  \\
+    \hline
+    \caption{Phân công nhiệm vụ trong nhóm}
+    \label{tab:phancong}
+\end{longtable}
