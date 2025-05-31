@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.5.28)  30 MAY 2025 21:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (MiKTeX 25.4) (preloaded format=pdflatex 2025.5.28)  31 MAY 2025 14:37
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1776,17 +1776,17 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: A15E91620C8913DE7E68C14A3F129C6D;4689.
  ) 
 Here is how much of TeX's memory you used:
- 46360 strings out of 469923
- 1000392 string characters out of 5486005
- 1712646 words of memory out of 5000000
- 72188 multiletter control sequences out of 15000+600000
+ 46354 strings out of 469923
+ 1000315 string characters out of 5486005
+ 1707646 words of memory out of 5000000
+ 72184 multiletter control sequences out of 15000+600000
  706204 words of font info for 131 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 93i,25n,120p,1207b,1586s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 93i,25n,120p,1207b,1589s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/MiKTeX/fonts/type1/public/lm/lmsy9.pfb><C:/MiKTeX/fonts/type1/vntex/txttvn/txtt8v.pfb><C:/MiKTeX/fonts/type1/vntex/urwvn/utmb8v.pfb><C:/MiKTeX/fonts/type1/vntex/urwvn/utmbi8v.pfb><C:/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/MiKTeX/fonts/type1/vntex/urwvn/utmr8v.pfb><C:/MiKTeX/fonts/type1/vntex/urwvn/utmri8v.pfb>
-Output written on d:\study\C\project\dadn\DADN242_Group82\report\DADN82\build\main.pdf (16 pages, 403964 bytes).
+Output written on d:\study\C\project\dadn\DADN242_Group82\report\DADN82\build\main.pdf (16 pages, 403164 bytes).
 PDF statistics:
- 309 PDF objects out of 1000 (max. 8388607)
- 56 named destinations out of 1000 (max. 500000)
+ 306 PDF objects out of 1000 (max. 8388607)
+ 54 named destinations out of 1000 (max. 500000)
  212 words of extra memory for PDF output out of 10000 (max. 10000000)
 

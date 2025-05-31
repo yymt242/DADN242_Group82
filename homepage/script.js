@@ -1,38 +1,38 @@
 /* Firebase configuration and initialization */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
 import { getDatabase, ref, get, set, onValue, off } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-database.js";
-import { getAuth, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+import { getAuth, signOut, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-storage.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
-
-
+import { getFirestore, doc, setDoc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";  // Firestore
 
 
 const firebaseConfig = {
     apiKey: "AIzaSyCLE7kFEQc7ZIC9kgtY70auZ14NoLoltxQ",
     authDomain: "dadn242group82.firebaseapp.com",
-    projectId: "dadn242group82",
-    storageBucket: "dadn242group82.firebasestorage.app",
+    projectId: "dadn242group82", // Used for Firestore
+    storageBucket: "dadn242group82.appspot.com",
     messagingSenderId: "462160967009",
     appId: "1:462160967009:web:813fae07b129707bb4c120",
     measurementId: "G-V4M7Q5KX56",
     databaseURL: "https://dadn242group82-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
-
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const firestore = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
-const fdb = getFirestore(app);
 
 let analytics;
 if (typeof window !== "undefined") {
     analytics = getAnalytics(app);
 }
 
+// Expose to global scope if needed
 window.firebase = {
     db,
+    firestore,
     ref,
     get,
     set,
@@ -42,20 +42,210 @@ window.firebase = {
     signOut,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
+    updateProfile,
+    analytics,
     storage,
     storageRef,
     uploadBytes,
     getDownloadURL,
-    analytics,
-    fdb,
     doc,
-    getDoc,
     setDoc,
-    updateDoc,
+    getDoc,
+    deleteDoc,
+    EmailAuthProvider,
+    reauthenticateWithCredential,
+    updatePassword,
 };
 
 
+export async function saveInfo(event) {
+    event.preventDefault();
 
+    const currentPassword = document.getElementById("current-password").value;
+    const newPassword = document.getElementById("new-password").value;
+    const newName = document.getElementById("new-name").value.trim();
+    const newPhone = document.getElementById("new-phone").value.trim();
+    const newRole = document.getElementById("new-role").value;
+    // const profilePicFile = document.getElementById("profile-pic")?.files[0];
+
+    const user = firebase.auth.currentUser;
+
+    if (!user) {
+        alert("Chưa đăng nhập!");
+        return;
+    }
+
+
+    // TODO: Re-authenticate user if changing password
+    // TODO: Change password here
+    if (newPassword) {
+        const currentEmail = user.email;
+        if (!currentEmail) {
+            alert("Không lấy được email người dùng, vui lòng đăng nhập lại.");
+            return;
+        }
+        if (!currentPassword) {
+            alert("Vui lòng nhập mật khẩu hiện tại để đổi mật khẩu.");
+            return;
+        }
+        try {
+            const credential = EmailAuthProvider.credential(currentEmail, currentPassword);
+            await reauthenticateWithCredential(user, credential);
+
+            await updatePassword(user, newPassword);
+        } catch (error) {
+            alert("Xác thực lại thất bại hoặc đổi mật khẩu lỗi: " + error.message);
+            return;
+        }
+    }
+
+    const updates = {};
+    if (newName) updates.name = newName;
+    if (newPhone) updates.phone = newPhone;
+    if (newRole) updates.role = newRole;
+
+
+    /*
+    if (profilePicFile) {
+        const filePath = `profile-pictures/${user.uid}_${profilePicFile.name}`;
+        const picRef = firebase.storageRef(firebase.storage, filePath);
+
+        try {
+            await firebase.uploadBytes(picRef, profilePicFile);
+            const downloadURL = await firebase.getDownloadURL(picRef);
+            updates.profilePic = downloadURL;
+
+            const img = document.getElementById("current-profile-pic");
+            if (img) img.src = downloadURL;
+        } catch (error) {
+            alert("Lỗi khi tải ảnh lên: " + error.message);
+            return;
+        }
+    }
+        */
+
+    // Update Firestore
+    const userDocRef = firebase.doc(firebase.firestore, "users", user.uid);
+    try {
+        await firebase.setDoc(userDocRef, updates, { merge: true });
+        alert("Thông tin đã được cập nhật.");
+
+        // 🔁 Re-run auth listener to refresh UI
+        firebase.auth.onAuthStateChanged(async function (user) {
+            if (user) {
+                const emailElement = document.getElementById("user-email");
+                if (emailElement) emailElement.textContent = user.email;
+
+                const userDocRef = firebase.doc(firebase.firestore, "users", user.uid);
+                const userDocSnap = await firebase.getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const data = userDocSnap.data();
+
+                    const setText = (id, text) => {
+                        const el = document.getElementById(id);
+                        if (el) el.textContent = text;
+                    };
+
+                    const setImageSrc = (id, src) => {
+                        const el = document.getElementById(id);
+                        if (el) el.src = src;
+                    };
+
+                    if (data.role === "admin") {
+                        document.getElementById("admin_f1").style.display = "flex";
+                        document.getElementById("admin_f2").style.display = "block";
+                    }
+                    else {
+                        document.getElementById("admin_f1").style.display = "none";
+                        document.getElementById("admin_f2").style.display = "none";
+                    }
+
+                    setText("current-role", data.role || "");
+                    setText("current-name", data.name || "");
+                    setText("current-name-top", data.name || "");
+                    setText("current-phone", data.phone || "");
+
+                    if (data.profilePic) {
+                        setImageSrc("current-profile-pic", data.profilePic);
+                    }
+                }
+            }
+        });
+
+        // 🧹 Clear form fields
+        document.getElementById("current-password").value = "";
+        document.getElementById("new-password").value = "";
+        document.getElementById("new-name").value = "";
+        document.getElementById("new-phone").value = "";
+        if (document.getElementById("profile-pic")) {
+            document.getElementById("profile-pic").value = "";
+        }
+
+    } catch (error) {
+        alert("Lỗi khi cập nhật thông tin: " + error.message);
+    }
+}
+
+
+
+firebase.auth.onAuthStateChanged(async function (user) {
+    if (user) {
+        // Display email
+        const emailElement = document.getElementById("user-email");
+        if (emailElement) {
+            emailElement.textContent = user.email;
+        }
+
+        // Reference to user's data in Firestore
+        const userDocRef = firebase.doc(firebase.firestore, "users", user.uid);
+        const userDocSnap = await firebase.getDoc(userDocRef);
+
+
+        if (!userDocSnap.exists()) {
+            console.warn("No user data found in Firestore for UID:", user.uid);
+            return;
+        }
+
+        const data = userDocSnap.data();
+
+        const setText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        };
+
+        /*
+        const setImageSrc = (id, src) => {
+            const el = document.getElementById(id);
+            if (el) el.src = src;
+        };
+        */
+        if (data.role === "admin") {
+            document.getElementById("admin_f1").style.display = "flex";
+            document.getElementById("admin_f2").style.display = "block";
+        }
+        else {
+            document.getElementById("admin_f1").style.display = "none";
+            document.getElementById("admin_f2").style.display = "none";
+        }
+
+        // Set values on the form
+        setText("current-role", data.role || "");
+        setText("current-name", data.name || "");
+        setText("current-name-top", data.name || "");
+        setText("current-phone", data.phone || "");
+
+        /*
+        if (data.profilePic) {
+            setImageSrc("current-profile-pic", data.profilePic);
+        }
+            */
+    }
+});
+
+
+
+window.saveInfo = saveInfo;
 /* RUN ONCE WHEN INITIALIZING */
 
 const SENSOR_FEEDS = ["anhsang", "doam", "khoangcach", "nhietdo"];
@@ -63,10 +253,10 @@ const ACTUATOR_FEEDS = ["quat", "led1", "door"];
 let currentFeedIndex = 0;
 
 const UNITS = {
-    anhsang: " lm",
-    khoangcach: " cm",
-    nhietdo: " °C",
-    doam: " %"
+    anhsang: "",
+    khoangcach: "",
+    nhietdo: "",
+    doam: ""
 };
 fetchFeedsInCircularManner();
 setupAutoStatusListeners();
@@ -77,7 +267,7 @@ const userEmail = localStorage.getItem('userEmail');
 if (userEmail) {
     console.log('User is signed in:', userEmail);
 } else {
-    window.location.href = '/login.html';
+    window.location.href = '../login/index.html';
 }
 let currentChart = null;
 let chartData = [];
@@ -290,7 +480,7 @@ async function updateAutoStatus() {
     const isIntruder = await checkIntruder();
 
     const warningStatus = document.getElementById("warning-status");
-    const khoangcachStatus = document.getElementById("khoangcach-status");
+    const khoangcachStatus = document.getElementById("khoangcach-value-wrapper");
     const warningZone = document.querySelector(".warning-zone");
     const icon = document.getElementById("intruder-status-icon");
 
@@ -318,7 +508,7 @@ async function updateAutoStatus() {
         warningStatus.textContent = "Không có đột nhập";
         warningStatus.style.color = "black";
         warningZone.classList.remove("blinking");
-        warningZone.style.boxShadow = "0 0 20px rgba(0, 255, 0, 1)"; // Green glow
+        warningZone.style.boxShadow = "0 0 20px white";
         icon.src = "./image/safe.png";
         khoangcachStatus.style.color = "#0023c4";
 
@@ -329,8 +519,8 @@ async function updateAutoStatus() {
     }
 
 
-    const anhsangStatus = document.getElementById("anhsang-status");
-    const nhietdoStatus = document.getElementById("nhietdo-status");
+    const anhsangStatus = document.getElementById("anhsang-value-wrapper");
+    const nhietdoStatus = document.getElementById("nhietdo-value-wrapper");
 
     // If the mode is auto, do this
     const modeRef = ref(db, "mode");
@@ -395,11 +585,87 @@ async function updateAutoStatus() {
 
 /* FUNCTION DEFINITION */
 
+// Register function
+window.registerAccount = async function (event) {
+    event.preventDefault();
+
+    const email = document.getElementById("register-email").value.trim();
+    const password = document.getElementById("register-password").value;
+    const confirmPassword = document.getElementById("register-confirm-password").value;
+    const name = document.getElementById("register-name").value.trim();
+    const phone = document.getElementById("register-phone").value.trim();
+    const role = document.getElementById("register-role").value;
+    // const profilePicFile = document.getElementById("register-profile-pic").files[0];
+
+
+    if (password !== confirmPassword) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Mật khẩu không khớp',
+            text: 'Vui lòng kiểm tra lại.'
+        });
+        return;
+    }
+
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        /*
+
+        // Optional: Upload profile picture to Firebase Storage
+        let photoURL = null;
+        if (profilePicFile) {
+            try {
+                const storagePathRef = storageRef(storage, 'profile-pictures/' + user.uid + '_' + profilePicFile.name);
+                await uploadBytes(storagePathRef, profilePicFile);
+                photoURL = await getDownloadURL(storagePathRef);
+                console.log("Uploaded photo URL:", photoURL);
+            } catch (error) {
+                console.error("Error uploading or getting download URL:", error);
+            }
+        }
+
+        // Update Firebase User Profile
+        await updateProfile(user, {
+            displayName: name,
+            photoURL: photoURL || undefined
+        });
+        */
+        // Save additional data to Firestore (optional)
+        await setDoc(doc(firestore, "users", user.uid), {
+            name,
+            email,
+            phone,
+            role,
+            // photoURL,
+            createdAt: new Date()
+        });
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Đăng ký thành công',
+        });
+
+        document.getElementById("register-form").reset();
+        switchToAccSetting();
+
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Đăng ký không thành công',
+            text: error.message
+        });
+    }
+};
+
+
+
 // Show user email in the header
 function showUserEmail() {
     const email = localStorage.getItem("userEmail");
     if (email) {
-        document.getElementById("user-email").textContent = `${email}`;
+        document.getElementById("user-email-top").textContent = `${email}`;
     }
 }
 
@@ -439,6 +705,18 @@ function checkIntruder() {
         const threshold = snapshot.val();
         return value < threshold;
     });
+}
+
+/* CHART DISPLAY AND UPDATES */
+function parseTimeRange(range) {
+    let duration = 60 * 1000; // default 1 minute
+
+    if (range.endsWith("m")) duration = parseInt(range) * 60 * 1000;
+    else if (range.endsWith("h")) duration = parseInt(range) * 60 * 60 * 1000;
+    else if (range.endsWith("d")) duration = parseInt(range) * 24 * 60 * 60 * 1000;
+    else if (range.endsWith("w")) duration = parseInt(range) * 7 * 24 * 60 * 60 * 1000;
+
+    return duration;
 }
 
 function updateChart() {
@@ -486,16 +764,37 @@ function setupRealtimeChartUpdates(feedKey) {
     });
 }
 
+
 function displayDataInChart(data) {
     const ctx = document.getElementById("data-chart").getContext("2d");
+    const timeRange = document.querySelector("#time-range-buttons .active")?.dataset.range || "1m";
+
+    const duration = parseTimeRange(timeRange);
+    const now = Date.now();
+    const min = new Date(now - duration);
+    const max = new Date(now);
 
     chartData = data.map(item => ({
         x: new Date(item.timestamp),
         y: item.value
     }));
 
+    chartData.sort((a, b) => a.x - b.x);
+
+    if (chartData.length === 0) {
+        chartData.push(
+            { x: min, y: null },
+            { x: max, y: null }
+        );
+    }
+
     if (currentChart) {
         currentChart.data.datasets[0].data = chartData;
+
+        // Update axis range dynamically
+        currentChart.options.scales.x.min = min.toISOString();
+        currentChart.options.scales.x.max = max.toISOString();
+
         currentChart.update();
         return;
     }
@@ -508,19 +807,22 @@ function displayDataInChart(data) {
                 data: chartData,
                 borderColor: "#0023c4",
                 fill: false,
+                spanGaps: false,
             }],
         },
         options: {
             responsive: true,
-            animation: true,
+            animation: false,
             plugins: {
                 legend: {
-                    display: false // Hides the legend
+                    display: false
                 }
             },
             scales: {
                 x: {
                     type: "time",
+                    min: min.toISOString(),
+                    max: max.toISOString(),
                     time: {
                         unit: "minute",
                         tooltipFormat: 'Pp',
@@ -794,7 +1096,7 @@ function updateStatus(feed_id, value) {
             break;
         case "khoangcach":
             min = 0;
-            max = 100;
+            max = 200;
             break;
         case "nhietdo":
             min = 20.0;

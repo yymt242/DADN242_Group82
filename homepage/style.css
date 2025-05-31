@@ -7,6 +7,8 @@
     --transition-speed: 0.2s;
 }
 
+
+/*
 @media (max-width: 400px) {
     .switch {
         width: 70px;
@@ -22,6 +24,7 @@
         transform: translateX(30px);
     }
 }
+    */
 
 
 * {
@@ -114,9 +117,8 @@ main {
 }
 
 .user-details {
-    display: flex;
-    flex-direction: column;
     line-height: 1.2;
+    text-align: left;
 }
 
 .greeting {
@@ -133,7 +135,7 @@ main {
 }
 
 .section-title {
-    font-size: 28px;
+    font-size: 23px;
     font-weight: 700;
     margin-bottom: 16px;
     margin-top: -10px;
@@ -194,10 +196,11 @@ main {
 .device-box {
     padding: 10px;
     border-radius: var(--box-radius);
+    margin: 0px 40px;
     margin-bottom: 15px;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
     /* softer background */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     /* soften shadow */
     display: flex;
     flex-direction: column;
@@ -456,7 +459,7 @@ canvas#data-chart {
     background-color: #a3d0ff;
     border-radius: 60px;
     margin: 20px auto 10px auto;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 1);
+    box-shadow: 0 0 20px white;
 }
 
 #warning-status {
@@ -576,8 +579,8 @@ input[type="range"]::-ms-fill-upper {
     width: 45%;
     margin: 0 auto;
     justify-content: center;
-    margin-bottom: 10px;
-    margin-top: -6px;
+    margin-bottom: 20px;
+    margin-top: 0px;
 }
 
 /* Individual toggle button styles */
@@ -601,7 +604,7 @@ input[type="range"]::-ms-fill-upper {
     color: white;
 }
 
-/* Media Query for smaller screens */
+/* Media Query for smaller screens
 @media (max-width: 600px) {
     .mode-toggle-group {
         width: 100%;
@@ -609,9 +612,10 @@ input[type="range"]::-ms-fill-upper {
 
     .mode-btn {
         font-size: 14px;
-        /* Smaller buttons on mobile */
     }
 }
+
+*/
 
 
 .nav-buttons {
@@ -737,6 +741,7 @@ input[type="range"]::-ms-fill-upper {
 /* Form group spacing */
 .form-group {
     margin-bottom: 20px;
+    padding: 0px 30px;
 }
 
 /* Labels */
@@ -752,7 +757,7 @@ label {
     width: 100%;
     padding: 10px 15px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 10px;
     font-size: 15px;
     box-sizing: border-box;
     transition: border-color 0.3s ease;
@@ -822,10 +827,29 @@ label {
 */
 
 
-#user-role,
+#current-role,
 #user-email,
 #current-name,
 #current-phone {
     color: blue;
     font-weight: bold;
+}
+
+.pic-input-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.admin-functions {
+    margin-bottom: 20px;
+    padding: 0px 0px 10px 20px;
+    background-color: #e8ecff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
 }

@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1748615809.7292 "d:/study/C/project/dadn/DADN242_Group82/report/DADN82/main.tex" "main.pdf" "main" 1748615813.86628 0
+["pdflatex"] 1748677068.29844 "d:/study/C/project/dadn/DADN242_Group82/report/DADN82/main.tex" "main.pdf" "main" 1748677075.01794 0
   "C:/MiKTeX/fonts/enc/dvips/base/8r.enc" 1458473887 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
   "C:/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc" 1256929440 2405 5dcf2c1b967ee25cc46c58cd52244aed ""
   "C:/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc" 1256929440 2840 216e6e45ad352e2456e1149f28885bee ""
@@ -339,15 +339,15 @@
   "C:/Users/thanh/AppData/Local/MiKTeX/fonts/tfm/public/esvect/vect9.tfm" 1748441557 372 0f5d5ce81aa16f79f2beefda0db5a26f ""
   "C:/Users/thanh/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1748442029 13142490 0a66e1360545b9decbceaa5e07389dcd ""
   "bibliography/bibliography.tex" 1748503159 675 3fe3e5e5bf4ea49458689624eab75369 ""
-  "build/main.aux" 1748615813 6043 e0e0eff07cba9a93d1f038bffe47f1da "pdflatex"
-  "build/main.lof" 1748615813 142 aaae12dcab852518d3b26db140d72f89 "pdflatex"
-  "build/main.lot" 1748615813 661 dcfe4aca24e6fb88e6bfe20cf2be565b "pdflatex"
-  "build/main.out" 1748615813 4689 a15e91620c8913de7e68c14a3f129c6d "pdflatex"
-  "build/main.toc" 1748615813 2316 4a7fa0be5e3355a70e3b8db70c72b455 "pdflatex"
+  "build/main.aux" 1748677074 6043 e0e0eff07cba9a93d1f038bffe47f1da "pdflatex"
+  "build/main.lof" 1748677074 142 aaae12dcab852518d3b26db140d72f89 "pdflatex"
+  "build/main.lot" 1748677074 661 dcfe4aca24e6fb88e6bfe20cf2be565b "pdflatex"
+  "build/main.out" 1748677074 4689 a15e91620c8913de7e68c14a3f129c6d "pdflatex"
+  "build/main.toc" 1748677074 2316 4a7fa0be5e3355a70e3b8db70c72b455 "pdflatex"
   "chapters/1 gioithieu.tex" 1748615808 8836 cba2ba842229501089e21c19213216f5 ""
   "chapters/2 thietke.tex" 1748614869 7395 a9cd822dc02559c342c5e5fe6a4375fb ""
   "chapters/4 usecase.tex" 1748612570 12729 0622f49bf0590f76790c035469e2fa66 ""
-  "chapters/5 mockups.tex" 1748615150 1325 fe8f30df05920e9217946485bb9d087d ""
+  "chapters/5 mockups.tex" 1748677066 1293 4978879c4839ca97ff10dc1a784f6f84 ""
   "chapters/9 ketluan.tex" 1748613261 255 44192ec8c72c8377695ad711368f3dc6 ""
   "cover_pages/01_logobachkhoasang.png" 1748449217 56581 5fccf1b2c810badc2465219984b028cd ""
   "cover_pages/abbreviations.tex" 1748447180 0 d41d8cd98f00b204e9800998ecf8427e ""

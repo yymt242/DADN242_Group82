@@ -9,11 +9,14 @@
     <link rel="icon" type="image/x-icon" href="imageres_78.ico">
     <link rel="stylesheet" href="style.css">
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script type="module" src="./script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script
         src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
 
 </head>
 
@@ -23,14 +26,18 @@
     <div class="header">
         <div class="user-info">
             <div class="profile-section">
+                <!--
                 <img src="path-to-profile.jpg" alt="Profile Picture" class="profile-pic">
+                -->
                 <div class="user-details">
                     <div class="greeting">Xin chào,</div>
-                    <span id="user-email" style="color: white;">user@example.com</span>
+                    <span id="user-email-top" style="color: white; display: none;">user@example.com</span>
+                    <span id="current-name-top" style="color: white;"></span>
                 </div>
             </div>
             <a href="#" id="logout-link">Đăng xuất</a>
         </div>
+
 
         <small>Nhóm 82 - Đồ án đa ngành HK242</small>
         <script>
@@ -68,7 +75,7 @@
             <div class="env-grid">
                 <div class="env-box">
                     <span>Ánh sáng</span>
-                    <div class="value-wrapper">
+                    <div class="value-wrapper" id="anhsang-value-wrapper">
                         <span id="anhsang-status">Loading...</span> lm
                     </div>
                     <div class="progress-container">
@@ -77,7 +84,7 @@
                 </div>
                 <div class="env-box">
                     <span>Khoảng cách</span>
-                    <div class="value-wrapper">
+                    <div class="value-wrapper" id="khoangcach-value-wrapper">
                         <span id="khoangcach-status">Loading...</span> cm
                     </div>
                     <div class="progress-container">
@@ -86,7 +93,7 @@
                 </div>
                 <div class="env-box">
                     <span>Nhiệt độ</span>
-                    <div class="value-wrapper">
+                    <div class="value-wrapper" id="nhietdo-value-wrapper">
                         <span id="nhietdo-status">Loading...</span> °C
                     </div>
                     <div class="progress-container">
@@ -95,7 +102,7 @@
                 </div>
                 <div class="env-box">
                     <span>Độ ẩm</span>
-                    <div class="value-wrapper">
+                    <div class="value-wrapper" id="doam-value-wrapper">
                         <span id="doam-status">Loading...</span> %
                     </div>
                     <div class="progress-container">
@@ -279,10 +286,6 @@
                         border-color: #0023c4;
                         font-weight: 600;
                     }
-
-                    .feed-btn:hover {
-                        background-color: yellow;
-                    }
                 </style>
 
                 <script>
@@ -331,69 +334,295 @@
 
         <!-- Account section -->
         <div class="section" id="account-section">
-            <div class="section-title">Cài đặt tài khoản</div>
+            <div class="account-settings" style="display: block;">
 
-            <form id="update-info-form" onsubmit="saveInfo(event)" style="display: block;">
-                <!-- Display-only Information -->
-                <div class="form-group">
-                    <label style="display:inline;">Vai trò:</label>
-                    <span id="user-role" class="info-value">user role</span>
+                <div class="section-title">Chỉnh sửa thông tin tài khoản</div>
+
+                <div class="admin-functions" id="admin_f1">
+                    <p style="padding-top: 10px">Dành cho Quản trị viên:</p>
+                    <button class="btn login-btn" style="background-color: #0023c4;" onclick="switchToRegister()">Tạo
+                        tài khoản mới</button>
                 </div>
-
-                <div class="form-group">
-                    <label style="display:inline;">Email:</label>
-                    <span id="user-email" class="info-value">user email</span>
-                </div>
-
-                <!-- Editable Information -->
-                <div class="form-group">
-                    <label for="current-password">Mật khẩu hiện tại</label>
-                    <input type="password" id="current-password" name="current-password" class="form-control"
-                        placeholder="Nhập mật khẩu hiện tại" />
-                </div>
-
-                <div class="form-group">
-                    <label for="confirm-password">Xác nhận mật khẩu</label>
-                    <input type="password" id="confirm-password" name="confirm-password" class="form-control"
-                        placeholder="Xác nhận mật khẩu" />
-                </div>
-
-                <div class="form-group">
-                    <label for="new-name">Tên tài khoản mới</label>
-                    <input type="text" id="new-name" name="new-name" class="form-control"
-                        placeholder="Nhập tên tài khoản mới" />
-                    <small>Tên hiện tại: <strong id="current-name">user name</strong></small>
-                </div>
-
-                <div class="form-group">
-                    <label for="new-phone">Số điện thoại mới</label>
-                    <input type="text" id="new-phone" name="new-phone" class="form-control"
-                        placeholder="Nhập số điện thoại mới" />
-                    <small>Số hiện tại: <strong id="current-phone">user phone number</strong></small>
-                </div>
-
-                <div class="form-group">
-                    <label>Ảnh đại diện hiện tại</label>
-                    <div>
-                        <img id="current-profile-pic" src="" alt="Ảnh đại diện hiện tại"
-                            style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
+                <form id="update-info-form" onsubmit="saveInfo(event)">
+                    <!-- Display-only Information -->
+                    <div class="form-group">
+                        <label style="display:inline;">Vai trò hiện tại:</label>
+                        <span id="current-role" class="info-value">user email</span>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="profile-pic">Cập nhật ảnh đại diện</label>
-                    <input type="file" id="profile-pic" name="profile-pic" class="form-control" accept="image/*" />
-                </div>
+                    <div class="form-group" id="admin_f2">
+                        <label for="new-role">Vai trò mới:</label>
+                        <select id="new-role" name="new-role" class="form-control">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
 
-                <!-- Action Buttons -->
-                <div class="account-buttons">
-                    <button type="submit" class="btn login-btn" style="background-color: #0023c4;">Cập nhật thông
-                        tin</button>
-                    <button type="button" class="btn login-btn" onclick="deleteAccount()"
-                        style="background-color: #d40000;">Xóa tài khoản</button>
+                    <div class="form-group">
+                        <label style="display:inline;">Email:</label>
+                        <span id="user-email" class="info-value">user email</span>
+                    </div>
+
+                    <!-- Editable Information -->
+                    <div class="form-group">
+                        <label for="current-password">Mật khẩu hiện tại</label>
+                        <input type="password" id="current-password" name="current-password" class="form-control"
+                            placeholder="Nhập mật khẩu hiện tại" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-password">Mật khẩu mới</label>
+                        <input type="password" id="new-password" name="new-password" class="form-control"
+                            placeholder="Nhập mật khẩu mới" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-name">Tên tài khoản mới</label>
+                        <input type="text" id="new-name" name="new-name" class="form-control"
+                            placeholder="Nhập tên tài khoản mới" />
+                        <small>Tên hiện tại: <strong id="current-name">user name</strong></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-phone">Số điện thoại mới</label>
+                        <input type="text" id="new-phone" name="new-phone" class="form-control"
+                            placeholder="Nhập số điện thoại mới" />
+                        <small>Số hiện tại: <strong id="current-phone">user phone number</strong></small>
+                    </div>
+
+                    <!--
+                    <div class="form-group">
+                        <label>Ảnh đại diện hiện tại</label>
+                        <div>
+                            <img id="current-profile-pic" src="" alt="Ảnh đại diện hiện tại"
+                                style="width:100px;height:100px;border-radius:50%;object-fit:cover;">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="profile-pic">Cập nhật ảnh đại diện</label>
+                        <div class="pic-input-group">
+                            <input type="file" id="profile-pic" name="profile-pic" class="form-control" accept="image/*"
+                                style="flex: 1;" />
+                            <button type="button" id="clear-image-btn" class="btn btn-secondary"
+                                style="background-color: #ccc; font-size: small; margin-bottom: 10px;">Bỏ chọn
+                                ảnh</button>
+                        </div>
+                    </div>
+                                        <script>
+                        document.getElementById('clear-image-btn').addEventListener('click', function () {
+                            const input = document.getElementById('profile-pic');
+                            input.value = ''; // Clear the file input
+                        });
+                    </script>
+                    -->
+
+                    <!-- Action Buttons -->
+                    <div class="account-buttons">
+                        <button type="submit" class="btn login-btn" style="background-color: #0023c4;">Cập nhật thông
+                            tin</button>
+                        <button type="button" class="btn login-btn" onclick="deleteAccount()"
+                            style="background-color: #d40000;">Xóa tài khoản</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="account-register" style="display: none;">
+                <div class="section-title">Đăng ký tài khoản</div>
+                <form id="register-form" onsubmit="registerAccount(event)">
+                    <!-- Role Selection (optional) -->
+                    <div class="form-group">
+                        <label for="register-role">Vai trò</label>
+                        <select id="register-role" name="register-role" class="form-control">
+                            <option value="user">Người dùng</option>
+                            <option value="admin">Quản trị viên</option>
+                        </select>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" name="register-email" class="form-control"
+                            placeholder="Nhập email" required />
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label for="register-password">Tạo mật khẩu</label>
+                        <input type="password" id="register-password" name="register-password" class="form-control"
+                            placeholder="Nhập mật khẩu" required />
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-group">
+                        <label for="register-confirm-password">Xác nhận mật khẩu</label>
+                        <input type="password" id="register-confirm-password" name="register-confirm-password"
+                            class="form-control" placeholder="Xác nhận mật khẩu" required />
+                    </div>
+
+                    <!-- Name -->
+                    <div class="form-group">
+                        <label for="register-name">Tên tài khoản</label>
+                        <input type="text" id="register-name" name="register-name" class="form-control"
+                            placeholder="Nhập tên tài khoản" required />
+                    </div>
+
+                    <!-- Phone Number -->
+                    <div class="form-group">
+                        <label for="register-phone">Số điện thoại</label>
+                        <input type="text" id="register-phone" name="register-phone" class="form-control"
+                            placeholder="Nhập số điện thoại" />
+                    </div>
+
+                    <!-- Profile Picture
+                    <div class="form-group">
+                        <label for="register-profile-pic">Ảnh đại diện</label>
+                        <div class="pic-input-group">
+                            <input type="file" id="register-profile-pic" name="register-profile-pic"
+                                class="form-control" accept="image/*" style="flex: 1;" />
+                            <button type="button" id="clear-register-image-btn" class="btn btn-secondary"
+                                style="background-color: #ccc; font-size: small; margin-bottom: 10px;">Bỏ chọn
+                                ảnh</button>
+                        </div>
+                    </div>
+                     -->
+
+
+                    <!-- Action Buttons -->
+                    <div class="account-buttons">
+                        <button type="submit" class="btn login-btn" style="background-color: #0023c4;">Đăng ký</button>
+                        <button type="button" class="btn login-btn" onclick="switchToAccSetting()"
+                            style="background-color: #d40000;">Hủy</button>
+                    </div>
+                </form>
+            </div>
+            <div id="reauth-modal"
+                style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+                <div style="background:#fff; padding:20px; border-radius:8px; max-width:400px; width:90%;">
+                    <h3>Vui lòng đăng nhập lại</h3>
+                    <form id="reauth-form">
+                        <div>
+                            <label for="reauth-email">Email</label><br>
+                            <input type="email" id="reauth-email" required />
+                        </div>
+                        <div>
+                            <label for="reauth-password">Mật khẩu</label><br>
+                            <input type="password" id="reauth-password" required />
+                        </div>
+                        <button type="submit">Xác nhận</button>
+                        <button type="button" onclick="closeReauthModal()">Hủy</button>
+                    </form>
+                    <div id="reauth-error" style="color:red; margin-top:8px;"></div>
                 </div>
-            </form>
+            </div>
+
         </div>
+        <script>
+
+            function openReauthModal() {
+                document.getElementById("reauth-error").textContent = "";
+                document.getElementById("reauth-email").value = "";
+                document.getElementById("reauth-password").value = "";
+                document.getElementById("reauth-modal").style.display = "flex";
+            }
+
+            function closeReauthModal() {
+                document.getElementById("reauth-modal").style.display = "none";
+            }
+
+            document.getElementById("reauth-form").addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const email = document.getElementById("reauth-email").value.trim();
+                const password = document.getElementById("reauth-password").value;
+
+                const user = firebase.auth.currentUser;
+                if (!user) {
+                    alert("Người dùng chưa đăng nhập.");
+                    closeReauthModal();
+                    return;
+                }
+
+                const credential = firebase.EmailAuthProvider.credential(email, password);
+
+                try {
+                    // Reauthenticate user
+                    await firebase.auth.reauthenticateWithCredential(user, credential);
+
+                    // Now delete user and Firestore doc
+                    await user.delete();
+
+                    const userDocRef = firebase.doc(firebase.firestore, "users", user.uid);
+                    await firebase.deleteDoc(userDocRef);
+
+                    await firebase.signOut(firebase.auth);
+
+                    alert("Tài khoản đã được xóa thành công.");
+                    closeReauthModal();
+                    window.location.href = "../login/index.html";
+                } catch (error) {
+                    document.getElementById("reauth-error").textContent = "Sai email hoặc mật khẩu, vui lòng thử lại.";
+                }
+            });
+
+            function switchToRegister() {
+                // Hide the account settings form
+                document.querySelector('.account-settings').style.display = 'none';
+                // Show the register section
+                document.querySelector('.account-register').style.display = 'block';
+                document.getElementById("register-form").reset();
+            }
+
+            function switchToAccSetting() {
+                // Hide the register section
+                document.querySelector('.account-register').style.display = 'none';
+                // Show the account settings form
+                document.querySelector('.account-settings').style.display = 'block';
+                document.getElementById("update-info-form").reset();
+            }
+
+            async function deleteAccount() {
+                const user = firebase.auth.currentUser;
+
+                if (!user) {
+                    alert("Không có người dùng nào đang đăng nhập.");
+                    return;
+                }
+
+                const confirmDelete = confirm("Bạn có chắc chắn muốn xóa tài khoản này không? Hành động này không thể hoàn tác.");
+                if (!confirmDelete) return;
+
+                try {
+                    // Try deleting user directly
+                    await user.delete();
+
+                    // Delete Firestore document after user deletion
+                    const userDocRef = firebase.doc(firebase.firestore, "users", user.uid);
+                    await firebase.deleteDoc(userDocRef);
+
+                    await firebase.signOut(firebase.auth);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: 'Tài khoản đã được xóa thành công.',
+                        confirmButtonText: 'OK'
+                    });
+                    // clear local storage
+                    localStorage.removeItem("userEmail");
+                    window.location.href = "../login/index.html"; // Adjust redirect if needed
+                } catch (error) {
+                    if (error.code === "auth/requires-recent-login") {
+                        // Show reauth form if recent login required
+                        openReauthModal();
+                    } else {
+                        alert("Lỗi khi xóa tài khoản: " + error.message);
+                    }
+                }
+            }
+
+        </script>
 
     </main>
     <!-- TAB SECTION FOR MOBILE DEVICE -->
@@ -460,6 +689,9 @@
                     if (targetSection) {
                         targetSection.classList.add('active');
                         targetSection.style.display = 'block';
+                        if (targetSection.id === 'account-section') {
+                            document.getElementById('update-info-form').reset();
+                        }
                     }
                 }
             }

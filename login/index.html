@@ -42,47 +42,7 @@
           -->
         </form>
 
-        <form id="register-form" style="display: none;" onsubmit="registerAccount(event)">
-          <div class="form-group">
-            <label for="reg-email">Email</label>
-            <input type="email" name="reg-email" id="reg-email" class="form-control" placeholder="Email" />
-          </div>
-          <div class="form-group">
-            <label for="reg-password">Mật khẩu</label>
-            <input type="password" name="reg-password" id="reg-password" class="form-control" placeholder="Mật khẩu" />
-          </div>
-          <div class="form-group">
-            <label for="reg-confirm-password">Xác nhận mật khẩu</label>
-            <input type="password" name="reg-confirm-password" id="reg-confirm-password" class="form-control"
-              placeholder="Xác nhận mật khẩu" />
-          </div>
-          <div class="form-group">
-            <label for="reg-name">Tên tài khoản</label>
-            <input type="text" name="reg-name" id="reg-name" class="form-control" placeholder="Tên tài khoản" />
-          </div>
-          <div class="form-group">
-            <label for="reg-phone">Số điện thoại</label>
-            <input type="text" name="reg-phone" id="reg-phone" class="form-control" placeholder="Số điện thoại" />
-          </div>
-          <div class="form-group">
-            <label for="reg-profile-pic">Ảnh đại diện</label>
-            <input type="text" name="reg-profile-pic" id="reg-profile-pic" class="form-control"
-              placeholder="URL ảnh đại diện" />
-          </div>
-          <div class="form-group">
-            <label for="reg-role">Vai trò</label>
-            <select name="reg-role" id="reg-role" class="form-control">
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-          <input name="register" id="register-btn" class="btn login-btn" type="submit" value="Đăng ký"
-            onclick="registerAccount()" />
-          <p class="login-wrapper-footer-text">
-            Đã có tài khoản?
-            <a href="#" id="switch-to-login" class="link2">Đăng nhập tại đây</a>
-          </p>
-        </form>
+
       </div>
     </div>
   </main>
@@ -149,42 +109,6 @@
         });
     };
 
-    // Register function
-    window.registerAccount = function (event) {
-      event.preventDefault();
-
-      const email = document.getElementById("reg-email").value;
-      const password = document.getElementById("reg-password").value;
-      const confirmPassword = document.getElementById("reg-confirm-password").value;
-
-      if (password !== confirmPassword) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Mật khẩu không khớp',
-          text: 'Vui lòng kiểm tra lại.'
-        });
-        return;
-      }
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Đăng ký thành công',
-          });
-          document.getElementById("register-form").reset();
-          $('#register-form').hide();
-          $('#login-form').show();
-          $('#form-title').text('Đăng nhập');
-        })
-        .catch((error) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Đăng ký không thành công',
-            text: error.message
-          });
-        });
-    };
 
     // Forgot password functionality
     document.getElementById("forgot-password").addEventListener("click", function () {
