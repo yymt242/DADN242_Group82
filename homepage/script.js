@@ -723,7 +723,7 @@ function setupLogout() {
         e.preventDefault();
         signOut(auth).then(() => {
             localStorage.removeItem("userEmail");
-            window.location.href = "../Login/index.html";
+            window.location.href = "../login/index.html";
         }).catch((error) => {
             alert("Đăng xuất không thành công: " + error.message);
         });

@@ -138,7 +138,7 @@
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           localStorage.setItem('userEmail', userCredential.user.email);
-          window.location.href = "../Homepage/index.html";
+          window.location.href = "../homepage/index.html";
         })
         .catch((error) => {
           Swal.fire({
