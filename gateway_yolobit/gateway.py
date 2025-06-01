@@ -6,9 +6,9 @@ import random
 from datetime import datetime
 
 # Feed keys to match Firebase structure
-FIREBASE_FEED_IDS = ["anhsang", "doam", "khoangcach", "nhietdo", "quat", "rgb", "door"]
+FIREBASE_FEED_IDS = ["anhsang", "doam", "khoangcach", "nhietdo", "quat", "rgb", "door", "warning"]
 SENSOR_FEEDS = ["anhsang", "doam", "khoangcach", "nhietdo"]
-ACTUATOR_FEEDS = ["quat", "rgb", "door"]
+ACTUATOR_FEEDS = ["quat", "rgb", "door", "warning"]
 FIREBASE_URL = "https://dadn242group82-default-rtdb.asia-southeast1.firebasedatabase.app/"
 
 # Serial port detection
@@ -78,21 +78,18 @@ if port:
 feed_index = 0
 latest_data = {}
 previous_values = {}
-prev_actuator_values = {"quat": None, "led1": None}
+prev_actuator_values = {"quat": None, "led1": None, "warning": None}
 
 while True:
     if isMicrobitConnected:
         readSerial()
-
         current_feed = FIREBASE_FEED_IDS[feed_index]
-
         if current_feed in SENSOR_FEEDS:
             value = latest_data.get(current_feed)
             if value is not None and previous_values.get(current_feed) != value:
                 sendToFirebase(current_feed, value)
                 previous_values[current_feed] = value
 
-        # In the 'elif current_feed in ACTUATOR_FEEDS:' block
         elif current_feed in ACTUATOR_FEEDS:
             url = f"{FIREBASE_URL}/{current_feed}.json"
             try:
@@ -100,14 +97,14 @@ while True:
                 if response.status_code == 200:
                     value = response.json()
                     if prev_actuator_values.get(current_feed) != value:
-                        # Handle door feed differently
                         if current_feed == "door":
                             command = f"D:{value}#"
                         elif current_feed == "quat":
                             command = f"F:{value}#"
-                        else:  # If it's any other actuator (e.g., "rgb", "quat")
+                        elif current_feed == "warning":
+                            command = f"W:{value}#"
+                        else:
                             command = f"L:{value}#"
-
                         ser.write(command.encode())
                         print(f"Send command to Yolobit: {command}")
                         prev_actuator_values[current_feed] = value
@@ -115,11 +112,9 @@ while True:
                     print(f"ERROR reading {current_feed} from Firebase: {response.text}")
             except Exception as e:
                 print(f"ERROR connecting to Firebase for actuator: {e}")
-
-
         feed_index = (feed_index + 1) % len(FIREBASE_FEED_IDS)
     else:
-        # Simulate data if no device is connected
+        # Generate random data if no device is connected
         for feed_id in SENSOR_FEEDS:
             if feed_id == "anhsang":
                 value = str(random.randint(100, 1000))
@@ -129,7 +124,6 @@ while True:
                 value = str(round(random.uniform(20.0, 35.0), 1))
             elif feed_id == "doam":
                 value = str(random.randint(30, 90))
-
             if previous_values.get(feed_id) != value:
                 sendToFirebase(feed_id, value)
                 previous_values[feed_id] = value
