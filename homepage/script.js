@@ -1091,8 +1091,8 @@ function updateStatus(feed_id, value) {
 
     switch (feed_id) {
         case "anhsang":
-            min = 100;
-            max = 1000;
+            min = 0;
+            max = 110;
             break;
         case "khoangcach":
             min = 0;
