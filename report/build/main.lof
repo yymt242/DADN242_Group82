@@ -1,0 +1,18 @@
+\contentsline {figure}{\numberline {1}{\ignorespaces Thiết bị sử dụng trong hệ thống}}{3}{figure.caption.1}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Sơ đồ khối kiến trúc hệ thống}}{5}{figure.caption.2}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Cơ sở dữ liệu tài khoản người dùng trên Firebase}}{6}{figure.caption.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Lưu trữ dữ liệu và cài đặt hệ thống trên Firebase}}{6}{figure.caption.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Sơ đồ Use Case của hệ thống}}{8}{figure.caption.5}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Sơ đồ hoạt động cho cập nhật dữ liệu từ cảm biến và điều khiển thiết bị}}{11}{figure.caption.6}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Sơ đồ hoạt động cho đăng nhập và đăng xuất, quên mật khẩu}}{11}{figure.caption.7}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Sơ đồ hoạt động cho báo động có đột nhập}}{12}{figure.caption.8}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Sơ đồ hoạt động cho tạo-xóa-cập nhật thông tin tài khoản}}{12}{figure.caption.9}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Sơ đồ lớp của hệ thống}}{13}{figure.caption.10}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Giao diện trang đăng nhập}}{15}{figure.caption.11}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Giao diện trang chủ - dữ liệu môi trường, và các tab điều hướng}}{15}{figure.caption.12}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Giao diện khi có cảnh báo đột nhập}}{15}{figure.caption.13}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Giao diện xem dữ liệu cảm biến theo thời gian}}{15}{figure.caption.14}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Giao diện trang điều khiển thiết bị thủ công}}{16}{figure.caption.15}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Giao diện cài đặt các ngưỡng cho điều khiển thiết bị tự động}}{16}{figure.caption.16}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Giao diện trang chỉnh sửa thông tin tài khoản}}{16}{figure.caption.17}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Giao diện đăng ký tài khoản mới (Chức năng cho Admin)}}{16}{figure.caption.18}%

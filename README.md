@@ -9,6 +9,8 @@ Học kỳ 242, Năm học 2024-2025
 Repository này bao gồm
 
 - Mã nguồn cho Web App điều khiển
+- Mã nguồn cho Yolo:bit
+- Mã nguồn cho IoT Gateway
 - Mã nguồn LaTeX và báo cáo môn học
 
 

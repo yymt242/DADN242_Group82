@@ -1,0 +1,83 @@
+% Figure/Image
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.25\textwidth]{figures/fig1.png}
+    \caption{caption}
+    \label{fig:fig1}
+\end{figure}
+
+
+% Table
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{|c|>{\raggedright\arraybackslash}X|>{\raggedright\arraybackslash}X|c|}
+        \hline
+        \textbf{Thiết bị}      & \textbf{Chức năng}    & \textbf{Cảm biến/Module} & \textbf{Giao tiếp} \\
+        \hline
+        Vi điều khiển Yolo:Bit & Xử lý trung tâm       & -                        & USB, Bluetooth     \\
+        \hline
+        Cảm biến DHT20         & Đo nhiệt độ, độ ẩm    & DHT20                    & I2C                \\
+        \hline
+        Cảm biến ánh sáng      & Đo cường độ ánh sáng  & Phototransistor          & Analog             \\
+        \hline
+        Cảm biến chuyển động   & Phát hiện chuyển động & PIR                      & Digital            \\
+        \hline
+        Đèn LED RGB            & Cảnh báo, chiếu sáng  & WS2812                   & Digital            \\
+        \hline
+        Màn hình LCD 16x2      & Hiển thị thông tin    & LCD1602                  & I2C                \\
+        \hline
+        Quạt mini              & Làm mát               & -                        & Digital            \\
+        \hline
+    \end{tabularx}
+    \caption{caption}
+    \label{tab:tab1}
+\end{table}
+
+\begin{longtable}{|p{0.2\textwidth}|p{0.8\textwidth}|}
+    \hline
+    \textbf{Use Case}     & \textbf{Theo dõi thông tin cảm biến}                                                                             \\
+    \hline
+    \textbf{Actors}       & Người quản lý hệ thống                                                                                           \\
+    \hline
+    \textbf{Descriptions} & Hệ thống cho phép quản lý hệ thống theo dõi, thống kê và xuất báo cáo dữ liệu cảm biến theo từng tháng hoặc quý. \\
+    \hline
+    \textbf{Precondition} &
+    - Quản lý hệ thống đã đăng nhập vào ứng dụng. \newline
+    - Dữ liệu cảm biến đã được ghi nhận trong hệ thống.                                                                                      \\
+    \hline
+    \caption{caption}
+    \label{tab:table}
+\end{longtable}
+
+% Itemize
+\begin{itemize}
+    \item \textbf{Use-Case 1: Giám sát nhiệt độ và độ ẩm}
+          \begin{itemize}
+              \item Actor: Cảm biến DHT20, Yolo:Bit.
+              \item Mô tả: Hệ thống đọc dữ liệu nhiệt độ và độ ẩm, hiển thị trên màn hình LCD và kích hoạt quạt nếu nhiệt độ vượt quá ngưỡng.
+          \end{itemize}
+    \item \textbf{Use-Case 2: Phát hiện chuyển động và cảnh báo}
+          \begin{itemize}
+              \item Actor: Cảm biến hồng ngoại, Yolo:Bit, LED RGB.
+              \item Mô tả: Khi phát hiện chuyển động lạ, hệ thống sẽ kích hoạt cảnh báo bằng đèn LED RGB và hiển thị thông tin cảnh báo lên LCD.
+          \end{itemize}
+    \item \textbf{Use-Case 3: Điều khiển từ xa}
+          \begin{itemize}
+              \item Actor: Người dùng, remote, hệ thống web.
+              \item Mô tả: Người dùng có thể sử dụng remote hoặc giao diện web để điều khiển hệ thống.
+          \end{itemize}
+
+\end{itemize}
+
+% Two columns with minipage
+\begin{minipage}{0.48\textwidth}
+    \begin{center}
+        % Left side content
+    \end{center}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+    \begin{center}
+        % Right side content
+    \end{center}
+\end{minipage}

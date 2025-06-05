@@ -1,0 +1,62 @@
+\newpage
+\section{GIỚI THIỆU ĐỀ TÀI}
+
+\subsection{Hệ thống báo động an toàn cho gia đình}
+
+\textbf{Hệ thống nhà thông minh (SmartHome)} có lẽ là từ khóa quá quen thuộc với mọi người trong cuộc sống hiện đại ngày nay. Nhà thông minh (Smart Home) là một hệ thống tích hợp các thiết bị điện tử và công nghệ tiên tiến nhằm tạo ra một môi trường sống tiện nghi, an toàn và tiết kiệm năng lượng. Các thiết bị trong nhà thông minh có thể bao gồm đèn chiếu sáng, điều hòa nhiệt độ, hệ thống an ninh, và các thiết bị gia dụng khác, tất cả đều được kết nối và điều khiển thông qua mạng internet. Nhờ vào công nghệ Internet of Things (IoT), các thiết bị này có thể giao tiếp với nhau và với người dùng, cho phép điều khiển từ xa và tự động hóa các hoạt động hàng ngày. Hệ thống nhà thông minh không chỉ mang lại sự tiện lợi mà còn giúp tối ưu hóa việc sử dụng năng lượng, nâng cao mức độ an toàn và cải thiện chất lượng cuộc sống.
+
+Trong đồ án đa ngành này, nhóm chúng em sẽ thực hiện một hệ thống báo động an toàn cho gia đình (một mô hình SmartHome đơn giản) được thiết kế để giám sát môi trường trong nhà và cảnh báo khi phát hiện có đột nhập lạ. Hệ thống sử dụng vi điều khiển Yolo:Bit cùng với các cảm biến để theo dõi nhiệt độ, độ ẩm, ánh sáng và chuyển động. Khi phát hiện đột nhập, hệ thống sẽ kích hoạt cảnh báo bằng đèn LED RGB, tự động đóng cửa phòng, cảnh báo đến người dùng thông qua trang web trên điện thoại/máy tính bảng có kết nối Internet.
+
+
+\subsection{Yêu cầu của hệ thống}
+
+\subsubsection{Yêu cầu chức năng}
+\begin{itemize}
+    \item Thu thập dữ liệu từ cảm biến nhiệt độ \& độ ẩm, ánh sáng và khoảng cách; xử lý thông tin trong thời gian thực.
+    \item Giám sát điều kiện môi trường (nhiệt độ, độ ẩm, ánh sáng) và tự động điều khiển các thiết bị quạt, đèn LED RGB, cửa trong phòng dựa trên ngưỡng cài đặt hoặc điều khiển thủ công.
+    \item Phát hiện nguy hiểm khi có đột nhập và kích hoạt cảnh báo (đèn LED RGB chớp nháy, đóng cửa, thông báo trên web).
+    \item Giao diện điều khiển trực quan trên web: hiển thị dữ liệu, điều khiển thiết bị từ xa, có dashboard để theo dõi trạng thái hệ thống.
+    \item Lưu trữ lịch sử dữ liệu của hệ thống để truy xuất khi cần.
+    \item Đồng bộ dữ liệu cảm biến và trạng thái thiết bị giữa nhiều người dùng đăng nhập cùng lúc.
+\end{itemize}
+
+\subsubsection{Yêu cầu phi chức năng}
+\begin{itemize}
+    \item \textbf{Độ chính xác}: Cảm biến nhiệt độ sai số ±2\%, độ ẩm ±5\%.
+    \item \textbf{Thời gian phản hồi}: Phản hồi dưới 1 giây sau khi nhận tín hiệu (real-time).
+    \item \textbf{Độ bền}: Thiết bị hoạt động ổn định trong khoảng 0\degree C đến 50\degree C.
+    \item \textbf{Tiêu thụ điện năng}: Nguồn 5V, tiêu thụ năng lượng thấp.
+    \item \textbf{Tính khả dụng}: Hệ thống luôn sẵn sàng 24/7, không gián đoạn quá 60 phút.
+    \item \textbf{Bảo mật}: Dữ liệu và mật khẩu được mã hóa; yêu cầu nhập mật khẩu để truy cập thông tin quan trọng.
+    \item \textbf{Dễ sử dụng}: Giao diện người dùng đơn giản, đẹp, học sử dụng trong vòng 3 phút; tương thích với tất cả các trình duyệt web.
+    \item \textbf{Tin cậy}: Dữ liệu thu được đảm bảo chính xác, ổn định và đáng tin cậy.
+    \item \textbf{Hiệu suất}: Hệ thống xử lý nhanh, hiệu quả, đảm bảo không trễ dữ liệu.
+\end{itemize}
+
+\subsubsection{Phạm vi và điều kiện hoạt động}
+\begin{itemize}
+    \item Phù hợp với hộ gia đình, căn hộ nhỏ, văn phòng hoặc lớp học quy mô nhỏ.
+    \item Hỗ trợ các thiết bị cơ bản như quạt mini, đèn LED RGB, servo đóng/mở cửa.
+    \item Kết nối và điều khiển từ xa qua mạng Internet trên nền tảng web.
+\end{itemize}
+
+\subsection{Phân công nhiệm vụ trong nhóm}
+
+
+\begin{longtable}{|p{0.1\textwidth}|p{0.3\textwidth}|p{0.2\textwidth}|p{0.3\textwidth}|}
+    \hline
+    \textbf{STT} & \textbf{Sinh viên thực hiện} & \textbf{Mã số sinh viên} & \textbf{Nhiệm vụ}     \\
+    \hline
+    1            & Nguyễn Anh Duy               & 2233163                  & Front-End cho Web App \\
+    \hline
+    2            & Nguyễn Thành Đạt             & 2012938                  & Code cho mạch YoloBit \\
+    \hline
+    3            & Nguyễn Ngọc Phú              & 2212588                  & Code IoT Gateway      \\
+    \hline
+    4            & Trương Minh Thông            & 2153005                  & Viết báo cáo \LaTeX   \\
+    \hline
+    5            & Nguyễn Viết Ký               & 2151217                  & Back-End cho Web App  \\
+    \hline
+    \caption{Phân công nhiệm vụ trong nhóm}
+    \label{tab:phancong}
+\end{longtable}
